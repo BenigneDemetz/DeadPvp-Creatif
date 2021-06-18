@@ -170,7 +170,7 @@ public class ItemBuilder {
     /**
      * Re-sets the lore.
      *
-     * @param lore The lore to set it to.
+     * @param lore The  lore to set it to.
      */
     public ItemBuilder setLore(List<String> lore) {
         ItemMeta im = is.getItemMeta();
