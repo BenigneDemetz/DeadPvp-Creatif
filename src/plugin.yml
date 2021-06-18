@@ -1,0 +1,8 @@
+name: DPCreatif
+main: net.deadpvp.Main
+description: "Le plugin créatif (nul) de dp (encore + nul)"
+author: "les gros nul de dev de DP"
+version: 1.0
+commands:
+  hub:
+    aliases: lobby
