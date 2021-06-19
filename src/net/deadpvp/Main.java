@@ -1,5 +1,6 @@
 package net.deadpvp;
 
+import net.deadpvp.commands.DpAccept;
 import net.deadpvp.commands.hub;
 import net.deadpvp.events.EventListener;
 import org.bukkit.Bukkit;
@@ -17,12 +18,12 @@ public class Main extends JavaPlugin implements PluginMessageListener {
     @Override
     public void onEnable() {
         instance = this;
-//        Bukkit.getMessenger().registerIncomingPluginChannel(this, "Return", this);
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         this.getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", this);
         PluginManager pm = Bukkit.getServer ().getPluginManager ();
         pm.registerEvents (new EventListener (), this);
         getCommand ("hub").setExecutor (new hub (this));
+        getCommand ("dpaccept").setExecutor (new DpAccept ());
     
         new BukkitRunnable () {
             @Override
