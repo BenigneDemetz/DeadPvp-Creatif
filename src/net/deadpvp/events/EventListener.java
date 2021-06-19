@@ -7,10 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -19,7 +16,7 @@ import java.util.ArrayList;
 public class EventListener implements Listener {
     
     public static ArrayList<Player> hasAccepted = new ArrayList<> ();
-    
+    private static final ItemStack book = BookUtils.createBook ();
     @EventHandler
     public void onWorldChange(PlayerChangedWorldEvent e) {
         new BukkitRunnable () {
@@ -42,7 +39,6 @@ public class EventListener implements Listener {
         }.runTaskLater (Main.getInstance (), 20L);
 
         if(!p.hasPlayedBefore ()) {
-            ItemStack book = BookUtils.createBook ();
             BookUtils.openBook (book, p);
         }
     }
@@ -50,14 +46,31 @@ public class EventListener implements Listener {
     public void onMove(PlayerMoveEvent e){
         //aucun event existe pour savoir quand le mec ferme un book donc j'ai un peu triché, l'event se trigger meme si il ne bouge que sa tete.
         if(!e.getPlayer ().hasPlayedBefore () && !hasAccepted.contains (e.getPlayer ())){
-            ItemStack book = BookUtils.createBook ();
             BookUtils.openBook (book, e.getPlayer ());
-            e.getPlayer ().sendMessage ("§a§l§nMerci de bien vouloir accepter les régles du créatif avant de pouvoir jouer.");
+            e.getPlayer ().sendMessage ("§c§lMerci de bien vouloir accepter les régles du créatif avant de pouvoir jouer.");
+        }
+    }
+    
+    @EventHandler
+    public void onChat(AsyncPlayerChatEvent e){
+        if(!hasAccepted.contains (e.getPlayer ())){
+            BookUtils.openBook (book, e.getPlayer ());
+            e.setCancelled (true);
+            e.getPlayer ().sendMessage ("§c§lMerci de bien vouloir accepter les régles du créatif avant de pouvoir jouer.");
+        }
+    }
+    
+    @EventHandler
+    public void onCommand(PlayerCommandPreprocessEvent e){
+        if(!hasAccepted.contains (e.getPlayer ()) && !e.getMessage ().equals ("/dpaccept")){
+            BookUtils.openBook (book, e.getPlayer ());
+            e.setCancelled (true);
+            e.getPlayer ().sendMessage ("§c§lMerci de bien vouloir accepter les régles du créatif avant de pouvoir jouer.");
         }
     }
     @EventHandler
     public void onLeave(PlayerQuitEvent e){
-        e.setQuitMessage ("§2[§4+§a] " + e.getPlayer ().getDisplayName ());
+        e.setQuitMessage("§c[§4-§d] " + e.getPlayer ().getDisplayName ());;
     }
     
 }

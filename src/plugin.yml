@@ -8,3 +8,5 @@ commands:
     description: accept
   hub:
     aliases: lobby
+  test:
+    description: "pour tester lol"

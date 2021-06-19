@@ -1,6 +1,7 @@
 package net.deadpvp;
 
 import net.deadpvp.commands.DpAccept;
+import net.deadpvp.commands.TestCommand;
 import net.deadpvp.commands.hub;
 import net.deadpvp.events.EventListener;
 import org.bukkit.Bukkit;
@@ -24,6 +25,7 @@ public class Main extends JavaPlugin implements PluginMessageListener {
         pm.registerEvents (new EventListener (), this);
         getCommand ("hub").setExecutor (new hub (this));
         getCommand ("dpaccept").setExecutor (new DpAccept ());
+        getCommand ("test").setExecutor (new TestCommand ());
     
         new BukkitRunnable () {
             @Override

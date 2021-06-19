@@ -22,7 +22,7 @@ public class BookUtils {
             BookMeta meta = (BookMeta) book.getItemMeta ();
             List<IChatBaseComponent> pages = (List<IChatBaseComponent>) CraftMetaBook.class.getDeclaredField ("pages").get (meta);
             
-            //Modif les texte comme tu veut, si tu veut ajouter des chose, mettre dans le tableau ligne 31
+            //Modif les texte comme tu veut, si tu veut ajouter des chose, mettre dans le tableau ligne 35
             TextComponent text = new TextComponent ("         §4§l§nRég§1§l§nles\n\n");
             TextComponent regle1 = new TextComponent ("§0§l§nIl est interdit de:§r \n\n - Cheat \n - Insulter \n - Usebug \n - Spam \n - Grief \n ");
             
