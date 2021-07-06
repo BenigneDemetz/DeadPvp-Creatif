@@ -53,7 +53,7 @@ public class EventListener implements Listener {
     
     @EventHandler
     public void onChat(AsyncPlayerChatEvent e){
-        if(!hasAccepted.contains (e.getPlayer ())){
+        if(!e.getPlayer().hasPlayedBefore() && !hasAccepted.contains (e.getPlayer ())){
             BookUtils.openBook (book, e.getPlayer ());
             e.setCancelled (true);
             e.getPlayer ().sendMessage ("§c§lMerci de bien vouloir accepter les régles du créatif avant de pouvoir jouer.");
@@ -62,7 +62,7 @@ public class EventListener implements Listener {
     
     @EventHandler
     public void onCommand(PlayerCommandPreprocessEvent e){
-        if(!hasAccepted.contains (e.getPlayer ()) && !e.getMessage ().equals ("/dpaccept")){
+        if(e.getPlayer().hasPlayedBefore() && !hasAccepted.contains (e.getPlayer ()) && !e.getMessage ().equals ("/dpaccept")){
             BookUtils.openBook (book, e.getPlayer ());
             e.setCancelled (true);
             e.getPlayer ().sendMessage ("§c§lMerci de bien vouloir accepter les régles du créatif avant de pouvoir jouer.");
