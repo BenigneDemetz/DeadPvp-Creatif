@@ -1,12 +1,13 @@
-name: DPCreatif
+name: DeadPvp
 main: net.deadpvp.Main
 description: "Le plugin créatif (nul) de dp (encore + nul)"
 author: "les gros nul de dev de DP"
 version: 1.0
+api-version: 1.16
 commands:
   dpaccept:
     description: accept
   hub:
     aliases: lobby
-  test:
-    description: "pour tester lol"
+  speed:
+    usage: "§cUtilisation: /speed [0-10]"
