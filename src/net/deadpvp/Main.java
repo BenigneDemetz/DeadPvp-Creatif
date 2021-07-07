@@ -2,10 +2,7 @@ package net.deadpvp;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
-import net.deadpvp.commands.DpAccept;
-import net.deadpvp.commands.Speed;
-import net.deadpvp.commands.TestCommand;
-import net.deadpvp.commands.hub;
+import net.deadpvp.commands.*;
 import net.deadpvp.events.EventListener;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -41,6 +38,8 @@ public class Main extends JavaPlugin implements PluginMessageListener {
         getCommand ("dpaccept").setExecutor (new DpAccept ());
 //        getCommand ("test").setExecutor (new TestCommand ());
         getCommand ("speed").setExecutor (new Speed());
+        getCommand ("spawn").setExecutor (new Spawn());
+        getCommand ("livrebeta").setExecutor (new LivreBeta());
         new BukkitRunnable () {
             @Override
             public void run() {
@@ -55,6 +54,7 @@ public class Main extends JavaPlugin implements PluginMessageListener {
             pl.setGameMode (GameMode.CREATIVE);
             EventListener.hasAccepted.add(pl);
         }
+
         super.onEnable ();
     }
     

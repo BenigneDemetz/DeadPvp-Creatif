@@ -24,7 +24,8 @@ public class BookUtils {
             
             //Modif les texte comme tu veut, si tu veut ajouter des chose, mettre dans le tableau ligne 35
             TextComponent text = new TextComponent ("         §4§l§nRég§1§l§nles\n\n");
-            TextComponent regle1 = new TextComponent ("§0§l§nIl est interdit de:§r \n\n - Cheat \n - Insulter \n - Usebug \n - Spam \n - Grief \n ");
+            TextComponent regle1 = new TextComponent ("§0§l§nIl est interdit de:§r \n\n - Cheat \n - Insulter \n - Usebug \n - Spam \n - " +
+                    "Grief \n - Construire des formes ou textes offensants ");
             
             //quand il clique pour accepter ça trigger une cmd et ajoute le mec dans une arraylist, c'est pas ouf comme méthode mais nique ça mardhe
             //et c'est 2h du mat

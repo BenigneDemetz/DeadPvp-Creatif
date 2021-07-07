@@ -2,27 +2,33 @@ package net.deadpvp.events;
 
 import net.deadpvp.Main;
 import net.deadpvp.utils.BookUtils;
+import net.deadpvp.utils.GuiUtils;
 import net.deadpvp.utils.ItemBuilder;
 import net.deadpvp.utils.sqlUtilities;
 import org.bukkit.*;
-import org.bukkit.block.Block;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.ItemSpawnEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.event.world.PortalCreateEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.awt.print.Book;
+import java.util.*;
 
 public class EventListener implements Listener {
     Boolean bienvenue = false;
@@ -43,6 +49,10 @@ public class EventListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer ();
+
+
+        Location spawn = new Location(Bukkit.getServer().getWorld("Creatif"), 0.5,65.1,80.5, 0, 0);
+        p.teleport(spawn);
         p.setPlayerListName(getPrefix(p)+p.getName());
         e.setJoinMessage ("§2[§4+§a] "+getPrefix(p) + e.getPlayer ().getDisplayName ());
         e.getPlayer ().setGameMode (GameMode.CREATIVE);
@@ -56,10 +66,16 @@ public class EventListener implements Listener {
         if(!p.hasPlayedBefore ()) {
             BookUtils.openBook (book, p);
         }
+        else hasAccepted.add(p);
 
-        ItemBuilder menu = new ItemBuilder(Material.WRITTEN_BOOK).setName("§dMenu");
-        p.getInventory().setItem(7, menu.toItemStack());
 
+//        ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
+//        BookMeta meta = (BookMeta) book.getItemMeta();
+//        meta.setAuthor("§4§lDEAD§9§lPVP");
+//        meta.setTitle("§4BETA §dCarnet de commandes");
+//        book.setItemMeta(meta);
+//
+//        p.getInventory().setItem(8, book);
         if(!p.hasPlayedBefore()){
             Bukkit.broadcastMessage("§7Souhaitez la bienvenue à §6"+p.getName()+"§7 pour reçevoir une récompense !");
             bienvenue = true;
@@ -73,12 +89,13 @@ public class EventListener implements Listener {
         }
 
     }
+
     @EventHandler
     public void onMove(PlayerMoveEvent e){
         //aucun event existe pour savoir quand le mec ferme un book donc j'ai un peu triché, l'event se trigger meme si il ne bouge que sa tete.
-        if(!e.getPlayer ().hasPlayedBefore () && !hasAccepted.contains (e.getPlayer ())){
-            BookUtils.openBook (book, e.getPlayer ());
-            e.getPlayer ().sendMessage ("§c§lMerci de bien vouloir accepter les régles du créatif avant de pouvoir jouer.");
+        if (!hasAccepted.contains(e.getPlayer())) {
+            BookUtils.openBook(book, e.getPlayer());
+            e.getPlayer().sendMessage("§c§lMerci de bien vouloir accepter les régles du créatif avant de pouvoir jouer.");
         }
     }
 
@@ -100,7 +117,7 @@ public class EventListener implements Listener {
     @EventHandler
     public void onChat(AsyncPlayerChatEvent e){
 
-        if(!e.getPlayer().hasPlayedBefore() && !hasAccepted.contains (e.getPlayer ())){
+        if(!hasAccepted.contains (e.getPlayer ())){
             BookUtils.openBook (book, e.getPlayer ());
             e.setCancelled (true);
             e.getPlayer ().sendMessage ("§c§lMerci de bien vouloir accepter les régles du créatif avant de pouvoir jouer.");
@@ -234,34 +251,125 @@ public class EventListener implements Listener {
         }
 
     }
-    @EventHandler
-    public void rightclick(PlayerInteractEvent e) {
-        if(e.getHand() == null){
-            return;
-        }
-        if(e.getAction() == null){
-            return;
-        }
-        if(e.getMaterial() == null){
-            return;
-        }
-        if(e.getClickedBlock().getBlockData().getMaterial() == Material.BEACON && e.getAction() == Action.RIGHT_CLICK_BLOCK){
-            e.setCancelled(true);
-        }
 
-        if (e.getPlayer().getInventory().getItemInOffHand().getType() == null || e.getPlayer().getInventory().getItemInMainHand().getType() == null) {
-            return;
+    @EventHandler
+    public void onInteract(PlayerInteractEvent e) {
+        Player p = e.getPlayer();
+        if (e.getItem() != null) {
+            if (e.getItem().getType().equals(Material.WRITTEN_BOOK)) {
+                BookMeta meta = (BookMeta) e.getItem().getItemMeta();
+                if (meta.getTitle().contains("§4BETA §dCarnet de commandes") && meta.getAuthor().equals("§4§lDEAD§9§lPVP")) {
+                    e.setCancelled(true);
+                    p.openInventory(GuiUtils.mainMenu(p));
+                }
+            }
+            if (Objects.requireNonNull(e.getClickedBlock()).getType().equals(Material.AIR)) return;
+            if(Objects.requireNonNull(e.getClickedBlock()).getBlockData().getMaterial() == Material.BEACON && e.getAction() == e.getAction().RIGHT_CLICK_BLOCK){
+                e.setCancelled(true);
+            }
+
+            if (e.getPlayer().getInventory().getItemInOffHand().getType() == null || e.getPlayer().getInventory().getItemInMainHand().getType() == null) {
+                return;
+            }
+            if(e.getClickedBlock().getBlockData().getMaterial() == null){
+                return;
+            }
+            if((e.getClickedBlock().getBlockData().getMaterial() ==Material.END_PORTAL_FRAME && (e.getPlayer().getInventory().getItemInMainHand().getType() == Material.ENDER_EYE
+                    ||e.getPlayer().getInventory().getItemInOffHand().getType() == Material.ENDER_EYE))&& e.getAction() == e.getAction().RIGHT_CLICK_BLOCK){
+                e.setCancelled(true);
+                return;
+
+            }
         }
-        if(e.getClickedBlock().getBlockData().getMaterial() == null){
-            return;
-        }
-        if((e.getClickedBlock().getBlockData().getMaterial() ==Material.END_PORTAL_FRAME && (e.getPlayer().getInventory().getItemInMainHand().getType() == Material.ENDER_EYE
-                ||e.getPlayer().getInventory().getItemInOffHand().getType() == Material.ENDER_EYE))&& e.getAction() == Action.RIGHT_CLICK_BLOCK){
+    }
+    @EventHandler
+    public void onInteractInventory (InventoryClickEvent e) {
+        Player p = (Player) e.getWhoClicked();
+        if (e.getClickedInventory() == null) return;
+
+//        if (Objects.requireNonNull(e.getCurrentItem()).getType().equals(Material.WRITTEN_BOOK)) {
+//            BookMeta meta = (BookMeta) e.getCurrentItem().getItemMeta();
+//            if (meta.getTitle().contains("Carnet de commandes") && meta.getAuthor().equals("§4§lDEAD§9§lPVP")) {
+//                e.setCancelled(true);
+//                p.openInventory(GuiUtils.mainMenu(p));
+//            }
+//        } //clic livre in inventory
+
+        if (e.getView().getTitle().equals("§bCommandes")) {
             e.setCancelled(true);
-            return;
+            switch (e.getCurrentItem().getType()) {
+                case IRON_SWORD:
+                    resetItemsGamemode(p);
+                    p.setGameMode(GameMode.ADVENTURE);
+                    ItemBuilder aventure = new ItemBuilder(Material.IRON_SWORD).setName("§dMode Aventure");
+                    ItemStack aventureItemStack = aventure.toItemStack();
+                    aventureItemStack.addUnsafeEnchantment(Enchantment.DAMAGE_ALL,1);
+                    ItemMeta itemMetaAventure = aventureItemStack.getItemMeta();
+                    itemMetaAventure.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+                    itemMetaAventure.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                    aventureItemStack.setItemMeta(itemMetaAventure);
+                    p.getOpenInventory().setItem(3*9+5, aventureItemStack);
+                    break;
+                case GLASS:
+                    resetItemsGamemode(p);
+                    p.setGameMode(GameMode.SPECTATOR);
+                    ItemBuilder spec = new ItemBuilder(Material.GLASS).setName("§dMode Spectateur");
+                    ItemStack specItemStack = spec.toItemStack();
+                    specItemStack.addUnsafeEnchantment(Enchantment.DAMAGE_ALL,1);
+                    ItemMeta itemMetaSpec = specItemStack.getItemMeta();
+                    itemMetaSpec.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                    specItemStack.setItemMeta(itemMetaSpec);
+                    p.getOpenInventory().setItem(3*9+6, specItemStack);
+                    break;
+                case STONE_PICKAXE:
+                    resetItemsGamemode(p);
+                    p.setGameMode(GameMode.SURVIVAL);
+                    ItemBuilder survie = new ItemBuilder(Material.STONE_PICKAXE).setName("§dMode Survie");
+                    ItemStack survieItemStack = survie.toItemStack();
+                    survieItemStack.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 1);
+                    ItemMeta itemMetaSurvie = survieItemStack.getItemMeta();
+                    itemMetaSurvie.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+                    itemMetaSurvie.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                    survieItemStack.setItemMeta(itemMetaSurvie);
+                    p.getOpenInventory().setItem(3*9+7, survieItemStack);
+                    break;
+                case CRAFTING_TABLE:
+                    resetItemsGamemode(p);
+                    p.setGameMode(GameMode.CREATIVE);
+                    ItemBuilder crea = new ItemBuilder(Material.CRAFTING_TABLE).setName("§dMode Créatif");
+                    ItemStack itemStackCrea = crea.toItemStack();
+                    itemStackCrea.addUnsafeEnchantment(Enchantment.DAMAGE_ALL,1);
+                    ItemMeta imcrea = crea.toItemStack().getItemMeta();
+                    imcrea.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+
+                    itemStackCrea.setItemMeta(imcrea);
+                    p.getOpenInventory().setItem(3*9+8,itemStackCrea);
+                    break;
+                case GRASS:
+                    p.performCommand("");
+                    break;
+                case OAK_DOOR:
+                    p.performCommand("p home");
+                    break;
+
+            }
 
         }
     }
+
+
+    @EventHandler
+    public void onRespawn (PlayerRespawnEvent e) {
+//        Player p = e.getPlayer();
+//        ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
+//        BookMeta meta = (BookMeta) book.getItemMeta();
+//        meta.setAuthor("§4§lDEAD§9§lPVP");
+//        meta.setTitle("Carnet de commandes");
+//        book.setItemMeta(meta);
+//
+//        p.getInventory().setItem(8, book);
+    }
+
 
     @EventHandler
     public void rightclick(PortalCreateEvent e) {
@@ -270,6 +378,25 @@ public class EventListener implements Listener {
 
     @EventHandler
     public void onCommand(PlayerCommandPreprocessEvent e){
+        Player p = e.getPlayer();
+
+        if (e.getMessage().contains("/msg")) e.setCancelled(true);
+
+//        new BukkitRunnable() {
+//            @Override
+//            public void run() {
+//                if (e.getMessage().contains("clear")) {
+//                    ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
+//                    BookMeta meta = (BookMeta) book.getItemMeta();
+//                    meta.setAuthor("§4§lDEAD§9§lPVP");
+//                    meta.setTitle("§4BETA §dCarnet de commandes");
+//                    book.setItemMeta(meta);
+//
+//                    p.getInventory().setItem(8, book);
+//                }
+//            }
+//        }.runTaskLater(Main.getInstance(), 5L);
+
         if(e.getPlayer().hasPlayedBefore() && !hasAccepted.contains (e.getPlayer ()) && !e.getMessage ().equals ("/dpaccept")){
             BookUtils.openBook (book, e.getPlayer ());
             e.setCancelled (true);
@@ -292,7 +419,8 @@ public class EventListener implements Listener {
     }
 
     public static String getPrefix(Player p) {
-        if (p.getName() == "Red_Spash") return ChatColor.RED+"[Développeur] ";
+        if (p.getName().equals("Red_Spash")) return ChatColor.RED+"[Développeur] ";
+        if (p.getName().equals("Arnaud013")) return ChatColor.RED+"[Développeur] ";
         if (p.hasPermission("chat.admin")) return ChatColor.DARK_RED+"[Administrateur] ";
         if (p.hasPermission("chat.dev")) return ChatColor.RED+"[Développeur] ";
         if (p.hasPermission("chat.modo")) return ChatColor.GOLD+"[Modérateur] ";
@@ -318,5 +446,49 @@ public class EventListener implements Listener {
 
         else return "§7";
     }
-    
+
+    @EventHandler
+    public void onDropItem (PlayerDropItemEvent e) {
+        Player p = e.getPlayer();
+        e.getItemDrop();
+        if (e.getItemDrop().getItemStack().getType().equals(Material.WRITTEN_BOOK)) {
+            BookMeta meta = (BookMeta) e.getItemDrop().getItemStack().getItemMeta();
+            if (meta.getTitle().contains("§4BETA §dCarnet de commandes") && meta.getAuthor().equals("§4§lDEAD§9§lPVP")) {
+                e.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onItemSpawn (ItemSpawnEvent e) {
+        if (e.getEntity().getItemStack().getType().equals(Material.WRITTEN_BOOK)) {
+            BookMeta meta = (BookMeta) e.getEntity().getItemStack().getItemMeta();
+            if (meta.getTitle().contains("§4BETA §dCarnet de commandes") && meta.getAuthor().equals("§4§lDEAD§9§lPVP")) {
+                e.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler
+    private void onWeatherChange (WeatherChangeEvent e) {
+        e.setCancelled(true);
+    }
+
+
+    private void resetItemsGamemode (Player p ) {
+
+        ItemBuilder aventure = new ItemBuilder(Material.IRON_SWORD).setName("§dMode Aventure");
+
+        ItemBuilder spec = new ItemBuilder(Material.GLASS).setName("§dMode Spectateur");
+
+        ItemBuilder survie = new ItemBuilder(Material.STONE_PICKAXE).setName("§dMode Survie");
+
+        ItemBuilder crea = new ItemBuilder(Material.CRAFTING_TABLE).setName("§dMode Créatif");
+
+        p.getOpenInventory().setItem(3*9+5, aventure.toItemStack());
+        p.getOpenInventory().setItem(3*9+6, spec.toItemStack());
+        p.getOpenInventory().setItem(3*9+7, survie.toItemStack());
+        p.getOpenInventory().setItem(3*9+8, crea.toItemStack());
+    }
+
 }
