@@ -20,10 +20,18 @@ public class GuiUtils {
 
 
         Inventory inventory = Bukkit.createInventory(null, 4*9, "§bCommandes");
+        ItemBuilder vide = new ItemBuilder(Material.LIGHT_BLUE_STAINED_GLASS_PANE).setName("§d");
+        for(int x=0; x<inventory.getSize();x++){
+            inventory.setItem(x,vide.toItemStack());
+        }
 
         ItemBuilder tpplot = new ItemBuilder(Material.OAK_DOOR).setName("§dTp à ton Plot");
-
         inventory.setItem(1*9+2, tpplot.toItemStack());
+
+        ItemBuilder cosmetique = new ItemBuilder(Material.NETHER_STAR).setName("§d§lCosmétique");
+        inventory.setItem(1*9+6, cosmetique.toItemStack());
+
+
 
         inventory = gamemodes(p,inventory);
 
@@ -33,7 +41,7 @@ public class GuiUtils {
 
     private static Inventory gamemodes(Player p, Inventory inventory) {
         GameMode gameMode = p.getGameMode();
-        ItemBuilder aventure = new ItemBuilder(Material.IRON_SWORD).setName("§dMode Aventure");
+        ItemBuilder aventure = new ItemBuilder(Material.MAP).setName("§dMode Aventure");
         ItemStack aventureItemStack = aventure.toItemStack();
         if (gameMode.equals(GameMode.ADVENTURE))
             aventureItemStack.addUnsafeEnchantment(Enchantment.DAMAGE_ALL,1);
@@ -42,7 +50,7 @@ public class GuiUtils {
         itemMetaAventure.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 
 
-        ItemBuilder spec = new ItemBuilder(Material.GLASS).setName("§dMode Spectateur");
+        ItemBuilder spec = new ItemBuilder(Material.ENDER_EYE).setName("§dMode Spectateur");
         ItemStack specItemStack = spec.toItemStack();
         if (gameMode.equals(GameMode.SPECTATOR))
             specItemStack.addUnsafeEnchantment(Enchantment.DAMAGE_ALL,1);
@@ -50,7 +58,7 @@ public class GuiUtils {
         itemMetaSpec.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 
 
-        ItemBuilder survie = new ItemBuilder(Material.STONE_PICKAXE).setName("§dMode Survie");
+        ItemBuilder survie = new ItemBuilder(Material.IRON_SWORD).setName("§dMode Survie");
         ItemStack survieItemStack = survie.toItemStack();
         if (gameMode.equals(GameMode.SURVIVAL))
             survieItemStack.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 1);
@@ -70,10 +78,10 @@ public class GuiUtils {
         specItemStack.setItemMeta(itemMetaSpec);
         survieItemStack.setItemMeta(itemMetaSurvie);
 
-        inventory.setItem(3*9+5, aventureItemStack);
-        inventory.setItem(3*9+6, specItemStack);
+        inventory.setItem(3*9+8, aventureItemStack);
+        //inventory.setItem(3*9+6, specItemStack);
         inventory.setItem(3*9+7, survieItemStack);
-        inventory.setItem(3*9+8, itemStackCrea);
+        inventory.setItem(3*9+6, itemStackCrea);
         return inventory;
     }
 

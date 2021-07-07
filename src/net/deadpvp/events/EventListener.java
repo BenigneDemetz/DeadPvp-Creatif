@@ -54,6 +54,7 @@ public class EventListener implements Listener {
         Location spawn = new Location(Bukkit.getServer().getWorld("Creatif"), 0.5,65.1,80.5, 0, 0);
         p.teleport(spawn);
         p.setPlayerListName(getPrefix(p)+p.getName());
+        Player player = e.getPlayer();
         e.setJoinMessage ("§2[§4+§a] "+getPrefix(p) + e.getPlayer ().getDisplayName ());
         e.getPlayer ().setGameMode (GameMode.CREATIVE);
         new BukkitRunnable () {
@@ -69,13 +70,13 @@ public class EventListener implements Listener {
         else hasAccepted.add(p);
 
 
-//        ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
-//        BookMeta meta = (BookMeta) book.getItemMeta();
-//        meta.setAuthor("§4§lDEAD§9§lPVP");
-//        meta.setTitle("§4BETA §dCarnet de commandes");
-//        book.setItemMeta(meta);
-//
-//        p.getInventory().setItem(8, book);
+        ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
+        BookMeta meta = (BookMeta) book.getItemMeta();
+        meta.setAuthor("§4§lDEAD§9§lPVP");
+        meta.setTitle("§dCarnet de commandes");
+        book.setItemMeta(meta);
+
+        p.getInventory().setItem(8, book);
         if(!p.hasPlayedBefore()){
             Bukkit.broadcastMessage("§7Souhaitez la bienvenue à §6"+p.getName()+"§7 pour reçevoir une récompense !");
             bienvenue = true;
@@ -136,6 +137,14 @@ public class EventListener implements Listener {
                 max++;
                 msgsans.replace(x, Character.toLowerCase(x));
             }
+        }
+        if(msg.contains("http") || msg.contains("https")){
+            if (!msg.contains("http://deadpvp.com/") && !msg.contains("https://deadpvp.com/")) {
+                e.setCancelled(true);
+                e.getPlayer().sendMessage("§cIl est interdit d'envoyer des lien sur §4§lDEAD§1§lPVP §c§l !");
+                return;
+            }
+
         }
         int pourcentage = (maj * 100) / max;
         if (pourcentage >= 30) {
@@ -204,6 +213,7 @@ public class EventListener implements Listener {
                 players.playSound(players.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
             }
         }
+
         if(e.getMessage().contains("@everyone") && (e.getPlayer().hasPermission("chat.admin") || e.getPlayer().hasPermission("chat.dev") || e.getPlayer().hasPermission("chat.modo") || e.getPlayer().hasPermission("chat.builder")) ){
             for(Player player2 : Bukkit.getOnlinePlayers()){
                 msg = msg.replace("@everyone","§c§l@everyone§f");
@@ -258,11 +268,12 @@ public class EventListener implements Listener {
         if (e.getItem() != null) {
             if (e.getItem().getType().equals(Material.WRITTEN_BOOK)) {
                 BookMeta meta = (BookMeta) e.getItem().getItemMeta();
-                if (meta.getTitle().contains("§4BETA §dCarnet de commandes") && meta.getAuthor().equals("§4§lDEAD§9§lPVP")) {
+                if (meta.getTitle().contains("§dCarnet de commandes") && meta.getAuthor().equals("§4§lDEAD§9§lPVP")) {
                     e.setCancelled(true);
                     p.openInventory(GuiUtils.mainMenu(p));
                 }
             }
+            if(e.getClickedBlock() == null)return;
             if (Objects.requireNonNull(e.getClickedBlock()).getType().equals(Material.AIR)) return;
             if(Objects.requireNonNull(e.getClickedBlock()).getBlockData().getMaterial() == Material.BEACON && e.getAction() == e.getAction().RIGHT_CLICK_BLOCK){
                 e.setCancelled(true);
@@ -287,13 +298,13 @@ public class EventListener implements Listener {
         Player p = (Player) e.getWhoClicked();
         if (e.getClickedInventory() == null) return;
 
-//        if (Objects.requireNonNull(e.getCurrentItem()).getType().equals(Material.WRITTEN_BOOK)) {
-//            BookMeta meta = (BookMeta) e.getCurrentItem().getItemMeta();
-//            if (meta.getTitle().contains("Carnet de commandes") && meta.getAuthor().equals("§4§lDEAD§9§lPVP")) {
-//                e.setCancelled(true);
-//                p.openInventory(GuiUtils.mainMenu(p));
-//            }
-//        } //clic livre in inventory
+        if (Objects.requireNonNull(e.getCurrentItem()).getType().equals(Material.WRITTEN_BOOK)) {
+            BookMeta meta = (BookMeta) e.getCurrentItem().getItemMeta();
+            if (meta.getTitle().contains("§dCarnet de commandes") && meta.getAuthor().equals("§4§lDEAD§9§lPVP")) {
+                e.setCancelled(true);
+                p.openInventory(GuiUtils.mainMenu(p));
+            }
+        } //clic livre in inventory
 
         if (e.getView().getTitle().equals("§bCommandes")) {
             e.setCancelled(true);
@@ -351,6 +362,8 @@ public class EventListener implements Listener {
                 case OAK_DOOR:
                     p.performCommand("p home");
                     break;
+                case NETHER_STAR:
+                    p.performCommand("gadgetsmenu menu main");
 
             }
 
@@ -360,14 +373,14 @@ public class EventListener implements Listener {
 
     @EventHandler
     public void onRespawn (PlayerRespawnEvent e) {
-//        Player p = e.getPlayer();
-//        ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
-//        BookMeta meta = (BookMeta) book.getItemMeta();
-//        meta.setAuthor("§4§lDEAD§9§lPVP");
-//        meta.setTitle("Carnet de commandes");
-//        book.setItemMeta(meta);
-//
-//        p.getInventory().setItem(8, book);
+        Player p = e.getPlayer();
+        ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
+        BookMeta meta = (BookMeta) book.getItemMeta();
+        meta.setAuthor("§4§lDEAD§9§lPVP");
+        meta.setTitle("Carnet de commandes");
+        book.setItemMeta(meta);
+
+        p.getInventory().setItem(8, book);
     }
 
 
@@ -382,20 +395,20 @@ public class EventListener implements Listener {
 
         if (e.getMessage().contains("/msg")) e.setCancelled(true);
 
-//        new BukkitRunnable() {
-//            @Override
-//            public void run() {
-//                if (e.getMessage().contains("clear")) {
-//                    ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
-//                    BookMeta meta = (BookMeta) book.getItemMeta();
-//                    meta.setAuthor("§4§lDEAD§9§lPVP");
-//                    meta.setTitle("§4BETA §dCarnet de commandes");
-//                    book.setItemMeta(meta);
-//
-//                    p.getInventory().setItem(8, book);
-//                }
-//            }
-//        }.runTaskLater(Main.getInstance(), 5L);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (e.getMessage().contains("clear")) {
+                    ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
+                    BookMeta meta = (BookMeta) book.getItemMeta();
+                    meta.setAuthor("§4§lDEAD§9§lPVP");
+                    meta.setTitle("§dCarnet de commandes");
+                    book.setItemMeta(meta);
+
+                    p.getInventory().setItem(8, book);
+                }
+            }
+        }.runTaskLater(Main.getInstance(), 5L);
 
         if(e.getPlayer().hasPlayedBefore() && !hasAccepted.contains (e.getPlayer ()) && !e.getMessage ().equals ("/dpaccept")){
             BookUtils.openBook (book, e.getPlayer ());
@@ -453,7 +466,7 @@ public class EventListener implements Listener {
         e.getItemDrop();
         if (e.getItemDrop().getItemStack().getType().equals(Material.WRITTEN_BOOK)) {
             BookMeta meta = (BookMeta) e.getItemDrop().getItemStack().getItemMeta();
-            if (meta.getTitle().contains("§4BETA §dCarnet de commandes") && meta.getAuthor().equals("§4§lDEAD§9§lPVP")) {
+            if (meta.getTitle().contains("§dCarnet de commandes") && meta.getAuthor().equals("§4§lDEAD§9§lPVP")) {
                 e.setCancelled(true);
             }
         }
@@ -463,7 +476,7 @@ public class EventListener implements Listener {
     public void onItemSpawn (ItemSpawnEvent e) {
         if (e.getEntity().getItemStack().getType().equals(Material.WRITTEN_BOOK)) {
             BookMeta meta = (BookMeta) e.getEntity().getItemStack().getItemMeta();
-            if (meta.getTitle().contains("§4BETA §dCarnet de commandes") && meta.getAuthor().equals("§4§lDEAD§9§lPVP")) {
+            if (meta.getTitle().contains("§dCarnet de commandes") && meta.getAuthor().equals("§4§lDEAD§9§lPVP")) {
                 e.setCancelled(true);
             }
         }
