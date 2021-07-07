@@ -245,7 +245,7 @@ public class EventListener implements Listener {
         if(e.getMaterial() == null){
             return;
         }
-        if(e.getClickedBlock().getBlockData().getMaterial() == Material.BEACON){
+        if(e.getClickedBlock().getBlockData().getMaterial() == Material.BEACON && e.getAction() == Action.RIGHT_CLICK_BLOCK){
             e.setCancelled(true);
         }
 
