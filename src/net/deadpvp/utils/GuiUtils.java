@@ -50,7 +50,7 @@ public class GuiUtils {
         itemMetaAventure.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 
 
-        ItemBuilder spec = new ItemBuilder(Material.ENDER_EYE).setName("§dMode Spectateur");
+        ItemBuilder spec = new ItemBuilder(Material.ENDER_EYE).setName("§4§l[STAFF] §dMode Spectateur");
         ItemStack specItemStack = spec.toItemStack();
         if (gameMode.equals(GameMode.SPECTATOR))
             specItemStack.addUnsafeEnchantment(Enchantment.DAMAGE_ALL,1);
@@ -79,9 +79,11 @@ public class GuiUtils {
         survieItemStack.setItemMeta(itemMetaSurvie);
 
         inventory.setItem(3*9+8, aventureItemStack);
-        //inventory.setItem(3*9+6, specItemStack);
         inventory.setItem(3*9+7, survieItemStack);
         inventory.setItem(3*9+6, itemStackCrea);
+        if(p.hasPermission("chat.dev")){
+            inventory.setItem(3*9+5, specItemStack);
+        }
         return inventory;
     }
 

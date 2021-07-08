@@ -6,6 +6,8 @@ import net.deadpvp.utils.GuiUtils;
 import net.deadpvp.utils.ItemBuilder;
 import net.deadpvp.utils.sqlUtilities;
 import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -49,8 +51,6 @@ public class EventListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer ();
-
-
         Location spawn = new Location(Bukkit.getServer().getWorld("Creatif"), 0.5,65.1,80.5, 0, 0);
         p.teleport(spawn);
         p.setPlayerListName(getPrefix(p)+p.getName());
@@ -111,6 +111,16 @@ public class EventListener implements Listener {
             e.setLine(1, line2.replace("&","§"));
             e.setLine(2, line3.replace("&","§"));
             e.setLine(3, line4.replace("&","§"));
+        }
+        for(int i=0;i==4;i++){
+            if(e.getLine(i).toLowerCase().contains("http") || e.getLine(i).toLowerCase().contains("https") || e.getLine(i).toLowerCase().contains("www") || e.getLine(i).toLowerCase().contains("://")){
+                if(!e.getLine(i).toLowerCase().contains("http://deadpvp.com/")){
+                    e.setLine(3,"§4LIEN INTERDIT ");
+                    e.setLine(1,"§4§lhttps://youtu.be/");
+                    e.setLine(2,"§4§ldQw4w9WgXcQ");
+                    e.setLine(3,"§d§l§kDDDDDDDDD");
+                }
+            }
         }
 
     }
@@ -259,7 +269,6 @@ public class EventListener implements Listener {
         ||e.getSpawnReason() == CreatureSpawnEvent.SpawnReason.BUILD_WITHER || e.getSpawnReason() == CreatureSpawnEvent.SpawnReason.BUILD_IRONGOLEM){
             e.setCancelled(true);
         }
-
     }
 
     @EventHandler
@@ -309,33 +318,35 @@ public class EventListener implements Listener {
         if (e.getView().getTitle().equals("§bCommandes")) {
             e.setCancelled(true);
             switch (e.getCurrentItem().getType()) {
-                case IRON_SWORD:
+                case MAP:
                     resetItemsGamemode(p);
                     p.setGameMode(GameMode.ADVENTURE);
-                    ItemBuilder aventure = new ItemBuilder(Material.IRON_SWORD).setName("§dMode Aventure");
+                    ItemBuilder aventure = new ItemBuilder(Material.MAP).setName("§dMode Aventure");
                     ItemStack aventureItemStack = aventure.toItemStack();
                     aventureItemStack.addUnsafeEnchantment(Enchantment.DAMAGE_ALL,1);
                     ItemMeta itemMetaAventure = aventureItemStack.getItemMeta();
                     itemMetaAventure.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
                     itemMetaAventure.addItemFlags(ItemFlag.HIDE_ENCHANTS);
                     aventureItemStack.setItemMeta(itemMetaAventure);
-                    p.getOpenInventory().setItem(3*9+5, aventureItemStack);
+                    p.getOpenInventory().setItem(3*9+8, aventureItemStack);
                     break;
-                case GLASS:
+                case ENDER_EYE:
                     resetItemsGamemode(p);
                     p.setGameMode(GameMode.SPECTATOR);
-                    ItemBuilder spec = new ItemBuilder(Material.GLASS).setName("§dMode Spectateur");
+                    ItemBuilder spec = new ItemBuilder(Material.ENDER_EYE).setName("§4§l[STAFF] §dMode Spectateur");
                     ItemStack specItemStack = spec.toItemStack();
                     specItemStack.addUnsafeEnchantment(Enchantment.DAMAGE_ALL,1);
                     ItemMeta itemMetaSpec = specItemStack.getItemMeta();
                     itemMetaSpec.addItemFlags(ItemFlag.HIDE_ENCHANTS);
                     specItemStack.setItemMeta(itemMetaSpec);
-                    p.getOpenInventory().setItem(3*9+6, specItemStack);
+                    if(p.hasPermission("chat.builder")){
+                        p.getOpenInventory().setItem(3*9+5, specItemStack);
+                    }
                     break;
-                case STONE_PICKAXE:
+                case IRON_SWORD:
                     resetItemsGamemode(p);
                     p.setGameMode(GameMode.SURVIVAL);
-                    ItemBuilder survie = new ItemBuilder(Material.STONE_PICKAXE).setName("§dMode Survie");
+                    ItemBuilder survie = new ItemBuilder(Material.IRON_SWORD).setName("§dMode Survie");
                     ItemStack survieItemStack = survie.toItemStack();
                     survieItemStack.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 1);
                     ItemMeta itemMetaSurvie = survieItemStack.getItemMeta();
@@ -354,7 +365,7 @@ public class EventListener implements Listener {
                     imcrea.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 
                     itemStackCrea.setItemMeta(imcrea);
-                    p.getOpenInventory().setItem(3*9+8,itemStackCrea);
+                    p.getOpenInventory().setItem(3*9+6,itemStackCrea);
                     break;
                 case GRASS:
                     p.performCommand("");
@@ -377,7 +388,7 @@ public class EventListener implements Listener {
         ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
         BookMeta meta = (BookMeta) book.getItemMeta();
         meta.setAuthor("§4§lDEAD§9§lPVP");
-        meta.setTitle("Carnet de commandes");
+        meta.setTitle("§dCarnet de commandes");
         book.setItemMeta(meta);
 
         p.getInventory().setItem(8, book);
@@ -385,7 +396,7 @@ public class EventListener implements Listener {
 
 
     @EventHandler
-    public void rightclick(PortalCreateEvent e) {
+    public void portalcreated(PortalCreateEvent e) {
         e.setCancelled(true);
     }
 
@@ -418,10 +429,13 @@ public class EventListener implements Listener {
         if (( e.getMessage().startsWith("/minecraft:list") || e.getMessage().startsWith("/list") || e.getMessage().startsWith("/pl")
                 || e.getMessage().startsWith("/plugins") || e.getMessage().startsWith("/help")|| e.getMessage().startsWith("/bukkit:pl")
                 || e.getMessage().startsWith("/bukkit:plugins") || e.getMessage().startsWith("/bukkit:?") || e.getMessage().startsWith("/?")
-                || e.getMessage().startsWith("/bukkit:help"))){
-            if(e.getMessage().startsWith("/plot") || e.getMessage().startsWith("/plugman") ){
-                return;
-            }
+                || e.getMessage().startsWith("/bukkit:help") )){
+            if(p.hasPermission("chat.builder"))return;
+            if(e.getMessage().startsWith("/perm") && !p.hasPermission("chat.dev"))e.setCancelled(true);
+
+            if(e.getMessage().startsWith("/plot") || e.getMessage().startsWith("/plugman") )return;
+
+
             e.setCancelled(true);
             e.getPlayer().sendMessage("§fCommande inconnue.");
         }
@@ -447,6 +461,8 @@ public class EventListener implements Listener {
     }
 
     public static String getPrefixColor(Player p) {
+        if (p.getName().equals("Red_Spash")) return "§c";
+        if (p.getName().equals("Arnaud013")) return "§c";
         if (p.hasPermission("chat.admin")) return "§4";
         if (p.hasPermission("chat.dev")) return "§c";
         if (p.hasPermission("chat.modo")) return "§6";
@@ -490,18 +506,19 @@ public class EventListener implements Listener {
 
     private void resetItemsGamemode (Player p ) {
 
-        ItemBuilder aventure = new ItemBuilder(Material.IRON_SWORD).setName("§dMode Aventure");
+        ItemBuilder aventure = new ItemBuilder(Material.MAP).setName("§dMode Aventure");
 
-        ItemBuilder spec = new ItemBuilder(Material.GLASS).setName("§dMode Spectateur");
+        ItemBuilder spec = new ItemBuilder(Material.GLASS).setName("§4§l[STAFF] §dMode Spectateur");
 
-        ItemBuilder survie = new ItemBuilder(Material.STONE_PICKAXE).setName("§dMode Survie");
+        ItemBuilder survie = new ItemBuilder(Material.IRON_SWORD).setName("§dMode Survie");
 
         ItemBuilder crea = new ItemBuilder(Material.CRAFTING_TABLE).setName("§dMode Créatif");
 
-        p.getOpenInventory().setItem(3*9+5, aventure.toItemStack());
-        p.getOpenInventory().setItem(3*9+6, spec.toItemStack());
+        p.getOpenInventory().setItem(3*9+8, aventure.toItemStack());
         p.getOpenInventory().setItem(3*9+7, survie.toItemStack());
-        p.getOpenInventory().setItem(3*9+8, crea.toItemStack());
+        p.getOpenInventory().setItem(3*9+6, crea.toItemStack());
+
+
     }
 
 }
