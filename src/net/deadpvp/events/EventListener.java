@@ -112,6 +112,16 @@ public class EventListener implements Listener {
             e.setLine(2, line3.replace("&","§"));
             e.setLine(3, line4.replace("&","§"));
         }
+        for(int i=0;i < 4;i++){
+            if(e.getLine(i).toLowerCase().contains("http") || e.getLine(i).toLowerCase().contains("www") || e.getLine(i).toLowerCase().contains("://")){
+                if(!e.getLine(i).toLowerCase().contains("http://deadpvp.com/")){
+                    e.setLine(3,"§4LIEN INTERDIT ");
+                    e.setLine(1,"§4§lhttps://youtu.be/");
+                    e.setLine(2,"§4§ldQw4w9WgXcQ");
+                    e.setLine(3,"§d§l§kDDDDDDDDD");
+                }
+            }
+        }
 
     }
     
@@ -295,17 +305,13 @@ public class EventListener implements Listener {
                 e.setCancelled(true);
             }
 
-            if (e.getPlayer().getInventory().getItemInOffHand().getType() == null || e.getPlayer().getInventory().getItemInMainHand().getType() == null) {
-                return;
-            }
-            if(e.getClickedBlock().getBlockData().getMaterial() == null){
+            if (e.getItem() == null || e.getClickedBlock() == null) {
                 return;
             }
             if((e.getClickedBlock().getBlockData().getMaterial() ==Material.END_PORTAL_FRAME && (e.getPlayer().getInventory().getItemInMainHand().getType() == Material.ENDER_EYE
                     ||e.getPlayer().getInventory().getItemInOffHand().getType() == Material.ENDER_EYE))&& e.getAction() == e.getAction().RIGHT_CLICK_BLOCK){
                 e.setCancelled(true);
                 return;
-
             }
         }
     }
@@ -374,7 +380,7 @@ public class EventListener implements Listener {
         ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
         BookMeta meta = (BookMeta) book.getItemMeta();
         meta.setAuthor("§4§lDEAD§9§lPVP");
-        meta.setTitle("Carnet de commandes");
+        meta.setTitle("§dCarnet de commandes");
         book.setItemMeta(meta);
 
         p.getInventory().setItem(8, book);
@@ -382,7 +388,7 @@ public class EventListener implements Listener {
 
 
     @EventHandler
-    public void rightclick(PortalCreateEvent e) {
+    public void createPortal(PortalCreateEvent e) {
         e.setCancelled(true);
     }
 
@@ -415,10 +421,13 @@ public class EventListener implements Listener {
         if (( e.getMessage().startsWith("/minecraft:list") || e.getMessage().startsWith("/list") || e.getMessage().startsWith("/pl")
                 || e.getMessage().startsWith("/plugins") || e.getMessage().startsWith("/help")|| e.getMessage().startsWith("/bukkit:pl")
                 || e.getMessage().startsWith("/bukkit:plugins") || e.getMessage().startsWith("/bukkit:?") || e.getMessage().startsWith("/?")
-                || e.getMessage().startsWith("/bukkit:help"))){
-            if(e.getMessage().startsWith("/plot") || e.getMessage().startsWith("/plugman") ){
-                return;
-            }
+                || e.getMessage().startsWith("/bukkit:help") )){
+            if(p.hasPermission("chat.builder"))return;
+            if(e.getMessage().startsWith("/perm") && !p.hasPermission("chat.dev"))e.setCancelled(true);
+
+            if(e.getMessage().startsWith("/plot") || e.getMessage().startsWith("/plugman") )return;
+
+
             e.setCancelled(true);
             e.getPlayer().sendMessage("§fCommande inconnue.");
         }
@@ -445,6 +454,8 @@ public class EventListener implements Listener {
     }
 
     public static String getPrefixColor(Player p) {
+        if (p.getName().equals("Red_Spash")) return "§c";
+        if (p.getName().equals("Arnaud013")) return "§c";
         if (p.hasPermission("chat.admin")) return "§4";
         if (p.hasPermission("chat.dev")) return "§c";
         if (p.hasPermission("chat.modo")) return "§6";
