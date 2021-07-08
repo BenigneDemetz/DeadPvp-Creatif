@@ -138,6 +138,18 @@ public class EventListener implements Listener {
                 msgsans.replace(x, Character.toLowerCase(x));
             }
         }
+        if(e.getPlayer().hasPermission("chat.apprenti") || e.getPlayer().hasPermission("chat.builder"))
+            msg = msg.replace("&", "§");
+
+        char carac = '§';
+        int count = 0;
+        for (int i = 0; i < msg.length(); i++) {
+            if (msg.charAt(i) == carac) {
+                count++;
+            }
+        }
+        if (msg.length() <= count*2) e.setCancelled(true);
+
         if(msg.contains("http") || msg.contains("https")){
             if (!msg.contains("http://deadpvp.com/") && !msg.contains("https://deadpvp.com/")) {
                 e.setCancelled(true);
@@ -157,7 +169,7 @@ public class EventListener implements Listener {
                 //    }
         //}
         if(msg.contains("<3") && (e.getPlayer().hasPermission("chat.apprenti") || e.getPlayer().hasPermission("chat.builder"))){
-            msg = msg.replace("<3","§c❤");
+            msg = msg.replace("<3","§c❤§f");
         }
         Player p = e.getPlayer();
 
@@ -190,9 +202,11 @@ public class EventListener implements Listener {
         if (msg.equals("[event cancelled by LiteBans")) return;
         if (spam.containsKey(p)) {
             if (spam.get(p) > System.currentTimeMillis()) {
-                p.sendMessage("§cErreur : tu dois attendre entre chaque message !");
-                e.setCancelled(true);
-                return;
+                if (!p.hasPermission("chat.builder")) {
+                    p.sendMessage("§cErreur : tu dois attendre entre chaque message !");
+                    e.setCancelled(true);
+                    return;
+                }
             }
 
         }
@@ -202,9 +216,11 @@ public class EventListener implements Listener {
             spam.put(p, c);
         }
         if (e.getMessage().equalsIgnoreCase(doublemsg.get(p.getPlayer()))) {
-            p.sendMessage("§cErreur : impossible d'envoyer 2 fois le même message d'affilé !");
-            e.setCancelled(true);
-            return;
+            if (!p.hasPermission("chat.builder")) {
+                p.sendMessage("§cErreur : impossible d'envoyer 2 fois le même message d'affilé !");
+                e.setCancelled(true);
+                return;
+            }
         }
         for (Player players : Bukkit.getOnlinePlayers()) {
             if (e.getMessage().contains(players.getName())) {
@@ -309,52 +325,26 @@ public class EventListener implements Listener {
         if (e.getView().getTitle().equals("§bCommandes")) {
             e.setCancelled(true);
             switch (e.getCurrentItem().getType()) {
-                case IRON_SWORD:
-                    resetItemsGamemode(p);
+                case MAP:
+//                    resetItemsGamemode(p);
                     p.setGameMode(GameMode.ADVENTURE);
-                    ItemBuilder aventure = new ItemBuilder(Material.IRON_SWORD).setName("§dMode Aventure");
-                    ItemStack aventureItemStack = aventure.toItemStack();
-                    aventureItemStack.addUnsafeEnchantment(Enchantment.DAMAGE_ALL,1);
-                    ItemMeta itemMetaAventure = aventureItemStack.getItemMeta();
-                    itemMetaAventure.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-                    itemMetaAventure.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-                    aventureItemStack.setItemMeta(itemMetaAventure);
-                    p.getOpenInventory().setItem(3*9+5, aventureItemStack);
+                    p.openInventory(GuiUtils.mainMenu(p));
                     break;
                 case GLASS:
-                    resetItemsGamemode(p);
                     p.setGameMode(GameMode.SPECTATOR);
-                    ItemBuilder spec = new ItemBuilder(Material.GLASS).setName("§dMode Spectateur");
-                    ItemStack specItemStack = spec.toItemStack();
-                    specItemStack.addUnsafeEnchantment(Enchantment.DAMAGE_ALL,1);
-                    ItemMeta itemMetaSpec = specItemStack.getItemMeta();
-                    itemMetaSpec.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-                    specItemStack.setItemMeta(itemMetaSpec);
-                    p.getOpenInventory().setItem(3*9+6, specItemStack);
+                    p.openInventory(GuiUtils.mainMenu(p));
                     break;
-                case STONE_PICKAXE:
-                    resetItemsGamemode(p);
+                case IRON_SWORD:
+//                    resetItemsGamemode(p);
                     p.setGameMode(GameMode.SURVIVAL);
-                    ItemBuilder survie = new ItemBuilder(Material.STONE_PICKAXE).setName("§dMode Survie");
-                    ItemStack survieItemStack = survie.toItemStack();
-                    survieItemStack.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 1);
-                    ItemMeta itemMetaSurvie = survieItemStack.getItemMeta();
-                    itemMetaSurvie.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-                    itemMetaSurvie.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-                    survieItemStack.setItemMeta(itemMetaSurvie);
-                    p.getOpenInventory().setItem(3*9+7, survieItemStack);
+                    p.openInventory(GuiUtils.mainMenu(p));
+//                    p.getOpenInventory().setItem(3*9+7, GuiUtils.survieItem(true));
                     break;
                 case CRAFTING_TABLE:
-                    resetItemsGamemode(p);
+//                    resetItemsGamemode(p);
                     p.setGameMode(GameMode.CREATIVE);
-                    ItemBuilder crea = new ItemBuilder(Material.CRAFTING_TABLE).setName("§dMode Créatif");
-                    ItemStack itemStackCrea = crea.toItemStack();
-                    itemStackCrea.addUnsafeEnchantment(Enchantment.DAMAGE_ALL,1);
-                    ItemMeta imcrea = crea.toItemStack().getItemMeta();
-                    imcrea.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-
-                    itemStackCrea.setItemMeta(imcrea);
-                    p.getOpenInventory().setItem(3*9+8,itemStackCrea);
+                    p.openInventory(GuiUtils.mainMenu(p));
+//                    p.getOpenInventory().setItem(3*9+6,GuiUtils.creaItem(true));
                     break;
                 case GRASS:
                     p.performCommand("");
@@ -364,6 +354,13 @@ public class EventListener implements Listener {
                     break;
                 case NETHER_STAR:
                     p.performCommand("gadgetsmenu menu main");
+                    break;
+                case ENDER_CHEST:
+                    p.performCommand("spawn");
+                    break;
+                case END_PORTAL_FRAME:
+                    p.performCommand("hub");
+                    break;
 
             }
 
@@ -426,6 +423,7 @@ public class EventListener implements Listener {
             e.getPlayer().sendMessage("§fCommande inconnue.");
         }
     }
+
     @EventHandler
     public void onLeave(PlayerQuitEvent e){
         e.setQuitMessage("§c[§4-§d] " + getPrefix(e.getPlayer())+e.getPlayer().getName());;
@@ -488,20 +486,6 @@ public class EventListener implements Listener {
     }
 
 
-    private void resetItemsGamemode (Player p ) {
 
-        ItemBuilder aventure = new ItemBuilder(Material.IRON_SWORD).setName("§dMode Aventure");
-
-        ItemBuilder spec = new ItemBuilder(Material.GLASS).setName("§dMode Spectateur");
-
-        ItemBuilder survie = new ItemBuilder(Material.STONE_PICKAXE).setName("§dMode Survie");
-
-        ItemBuilder crea = new ItemBuilder(Material.CRAFTING_TABLE).setName("§dMode Créatif");
-
-        p.getOpenInventory().setItem(3*9+5, aventure.toItemStack());
-        p.getOpenInventory().setItem(3*9+6, spec.toItemStack());
-        p.getOpenInventory().setItem(3*9+7, survie.toItemStack());
-        p.getOpenInventory().setItem(3*9+8, crea.toItemStack());
-    }
 
 }
