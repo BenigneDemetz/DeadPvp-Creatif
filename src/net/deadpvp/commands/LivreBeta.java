@@ -1,5 +1,6 @@
 package net.deadpvp.commands;
 
+import net.deadpvp.events.EventListener;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -18,6 +19,11 @@ public class LivreBeta implements CommandExecutor {
         meta.setAuthor("§4§lDEAD§9§lPVP");
         meta.setTitle("§4BETA §dCarnet de commandes");
         book.setItemMeta(meta);
+
+        if(commandSender instanceof Player){
+            Player p = (Player) commandSender;
+            EventListener.setScoreBoard(p);
+        }
 
         ((Player) commandSender).getInventory().setItem(8, book);
 
