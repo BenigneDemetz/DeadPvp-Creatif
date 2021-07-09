@@ -50,8 +50,6 @@ public class EventListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onJoin(PlayerJoinEvent e) {
 
-        Player p = e.getPlayer ();
-
         if(!p.hasPermission("deadpvp.vanich")){
             for(Player playervanished : Vanich.inVanish){
                 p.hidePlayer(playervanished);
@@ -234,9 +232,10 @@ public class EventListener implements Listener {
             }
         }
         for (Player players : Bukkit.getOnlinePlayers()) {
-            if (e.getMessage().contains(players.getName())) {
+            if (e.getMessage().contains(players.getName()) || e.getMessage().contains(players.getDisplayName())) {
 
-                msg = msg.replace(players.getName(), "§b§l"+players.getName()+"§f");
+                msg = msg.replace(players.getName(), "§b§l"+players.getDisplayName()+"§f");
+                msg = msg.replace(players.getDisplayName(), "§b§l"+players.getDisplayName()+"§f");
                 players.playSound(players.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
             }
         }
@@ -277,8 +276,7 @@ public class EventListener implements Listener {
             msg = msg.replaceAll("(?i)bienvenue!","§6§lBienvenue§f!");
         }
 
-        e.setFormat(getPrefix(p) + p.getName() + ": §f" + msg);
-
+        e.setFormat(getPrefix(p) + p.getDisplayName() + ": §f" + msg);
 
     }
 

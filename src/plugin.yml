@@ -20,3 +20,5 @@ commands:
     aliases: tpaccept
   tpno:
     aliases: tprefuse
+  nick:
+    usage: "§cUtilisation: /nick <pseudo>"
