@@ -60,7 +60,7 @@ public class EventListener implements Listener {
         Location spawn = new Location(Bukkit.getServer().getWorld("Creatif"), 0.5,65.1,80.5, 0, 0);
         p.teleport(spawn);
         p.setPlayerListName(getPrefix(p)+p.getName());
-        e.setJoinMessage ("§2[§4+§a] "+getPrefix(p) + e.getPlayer ().getDisplayName ());
+        e.setJoinMessage ("§a[§4+§a] "+getPrefix(p) + e.getPlayer ().getDisplayName ());
         e.getPlayer ().setGameMode (GameMode.CREATIVE);
         new BukkitRunnable () {
             @Override
@@ -442,7 +442,7 @@ public class EventListener implements Listener {
 
     @EventHandler
     public void onLeave(PlayerQuitEvent e){
-        e.setQuitMessage("§c[§4-§d] " + getPrefix(e.getPlayer())+e.getPlayer().getName());;
+        e.setQuitMessage("§d[§4-§d] " + getPrefix(e.getPlayer())+e.getPlayer().getName());;
         Player player = e.getPlayer();
         for (Player p : Bukkit.getOnlinePlayers()) {
             p.showPlayer(player);
