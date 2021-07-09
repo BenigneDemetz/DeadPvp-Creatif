@@ -11,18 +11,17 @@ import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 import net.deadpvp.commands.*;
 import net.deadpvp.events.EventListener;
+import net.deadpvp.utils.AdminInv;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.craftbukkit.libs.org.apache.commons.lang3.reflect.FieldUtils;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.math.BigInteger;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,6 +34,9 @@ public class Main extends JavaPlugin implements PluginMessageListener {
     public String host, database, username, password;
     public int port;
 
+    public ArrayList<Player> vanishedPlayers = new ArrayList<Player>();
+    public ArrayList<Player> staffModePlayers = new ArrayList<Player>();
+    public HashMap<Player, AdminInv> adminPlayerHashmap = new HashMap<>();
     public HashMap<String, String> nickname = new HashMap<>();
 
     
@@ -53,6 +55,10 @@ public class Main extends JavaPlugin implements PluginMessageListener {
         getCommand ("speed").setExecutor (new Speed());
         getCommand ("spawn").setExecutor (new Spawn());
         getCommand ("livrebeta").setExecutor (new LivreBeta());
+        getCommand("Vanish").setExecutor(new Vanich());
+        getCommand("tpa").setExecutor(new tpa());
+        getCommand("tpyes").setExecutor(new tpyes());
+        getCommand("tpno").setExecutor(new tpno());
         getCommand ("nick").setExecutor (new Nick());
         new BukkitRunnable () {
             @Override
@@ -86,6 +92,7 @@ public class Main extends JavaPlugin implements PluginMessageListener {
                     if (nickname.containsKey(profile.getName())) profile =
                             profile.withName(Nick.getColor(Bukkit.getPlayer(profile.getName())) + nickname.get(profile.getName()));
                     PlayerInfoData newPlayerInfoData = new PlayerInfoData(profile, playerInfoData.getPing(), playerInfoData.getGameMode(), playerInfoData.getDisplayName());
+
 
 
                     newPlayerInfoDataList.add(newPlayerInfoData);

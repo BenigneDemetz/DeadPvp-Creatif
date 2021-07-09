@@ -1,10 +1,11 @@
 package net.deadpvp.events;
 
+import at.pcgamingfreaks.MarriageMaster.Bukkit.API.Marriage;
+import at.pcgamingfreaks.MarriageMaster.Bukkit.API.MarriagePlayer;
+import at.pcgamingfreaks.MarriageMaster.Bukkit.MarriageMaster;
 import net.deadpvp.Main;
-import net.deadpvp.utils.BookUtils;
-import net.deadpvp.utils.GuiUtils;
-import net.deadpvp.utils.ItemBuilder;
-import net.deadpvp.utils.sqlUtilities;
+import net.deadpvp.commands.Vanich;
+import net.deadpvp.utils.*;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -35,7 +36,7 @@ public class EventListener implements Listener {
     public static Map<Player,Player> lastdamage = new HashMap<Player,Player>();
     Map<Player, Long> spam = new HashMap<Player, Long>();
     Map<Player, String> doublemsg = new HashMap<Player, String>();
-    public static ArrayList<Player> hasAccepted = new ArrayList<> ();
+    //public static ArrayList<Player> hasAccepted = new ArrayList<> ();
     private static final ItemStack book = BookUtils.createBook ();
 
     @EventHandler
@@ -48,10 +49,12 @@ public class EventListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onJoin(PlayerJoinEvent e) {
-        Player p = e.getPlayer ();
 
-        p.performCommand("/nick ntm");
-
+        if(!p.hasPermission("deadpvp.vanich")){
+            for(Player playervanished : Vanich.inVanish){
+                p.hidePlayer(playervanished);
+            }
+        }
         Location spawn = new Location(Bukkit.getServer().getWorld("Creatif"), 0.5,65.1,80.5, 0, 0);
         p.teleport(spawn);
         p.setPlayerListName(getPrefix(p)+p.getName());
@@ -65,10 +68,6 @@ public class EventListener implements Listener {
             }
         }.runTaskLater (Main.getInstance (), 20L);
 
-        if(!p.hasPlayedBefore ()) {
-            BookUtils.openBook (book, p);
-        }
-        else hasAccepted.add(p);
 
 
         ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
@@ -92,14 +91,14 @@ public class EventListener implements Listener {
 
     }
 
-    @EventHandler
-    public void onMove(PlayerMoveEvent e){
+//    @EventHandler
+//    public void onMove(PlayerMoveEvent e){
         //aucun event existe pour savoir quand le mec ferme un book donc j'ai un peu triché, l'event se trigger meme si il ne bouge que sa tete.
-        if (!hasAccepted.contains(e.getPlayer())) {
-            BookUtils.openBook(book, e.getPlayer());
-            e.getPlayer().sendMessage("§c§lMerci de bien vouloir accepter les régles du créatif avant de pouvoir jouer.");
-        }
-    }
+//        if (!hasAccepted.contains(e.getPlayer())) {
+//            BookUtils.openBook(book, e.getPlayer());
+//            e.getPlayer().sendMessage("§c§lMerci de bien vouloir accepter les régles du créatif avant de pouvoir jouer.");
+//        }
+    //}
 
     @EventHandler
     public void Signit(SignChangeEvent e){
@@ -116,9 +115,9 @@ public class EventListener implements Listener {
         for(int i=0;i < 4;i++){
             if(e.getLine(i).toLowerCase().contains("http") || e.getLine(i).toLowerCase().contains("www") || e.getLine(i).toLowerCase().contains("://")){
                 if(!e.getLine(i).toLowerCase().contains("http://deadpvp.com/")){
-                    e.setLine(3,"§4LIEN INTERDIT ");
-                    e.setLine(1,"§4§lhttps://youtu.be/");
-                    e.setLine(2,"§4§ldQw4w9WgXcQ");
+                    e.setLine(0,"§4LIEN INTERDIT ");
+                    e.setLine(1,"§4youtu.be/");
+                    e.setLine(2,"§4dQw4w9WgXcQ");
                     e.setLine(3,"§d§l§kDDDDDDDDD");
                 }
             }
@@ -129,13 +128,12 @@ public class EventListener implements Listener {
     @EventHandler
     public void onChat(AsyncPlayerChatEvent e){
 
-        if(!hasAccepted.contains (e.getPlayer ())){
-            BookUtils.openBook (book, e.getPlayer ());
-            e.setCancelled (true);
-            e.getPlayer ().sendMessage ("§c§lMerci de bien vouloir accepter les régles du créatif avant de pouvoir jouer.");
-            return;
-        }
-
+        //if(!hasAccepted.contains (e.getPlayer ())){
+        //    BookUtils.openBook (book, e.getPlayer ());
+        //   e.setCancelled (true);
+        //    e.getPlayer ().sendMessage ("§c§lMerci de bien vouloir accepter les régles du créatif avant de pouvoir jouer.");
+        //    return;
+        //}
         String msg = e.getMessage();
         int maj = 0;
         int max = 1;
@@ -161,8 +159,8 @@ public class EventListener implements Listener {
         }
         if (msg.length() <= count*2) e.setCancelled(true);
 
-        if(msg.contains("http") || msg.contains("https")){
-            if (!msg.contains("http://deadpvp.com/") && !msg.contains("https://deadpvp.com/")) {
+        if(msg.contains("http") || msg.contains("https") ){
+            if ((!msg.contains("http://deadpvp.com/") && !msg.contains("https://deadpvp.com/"))&& !e.getPlayer().hasPermission("chat.builder")) {
                 e.setCancelled(true);
                 e.getPlayer().sendMessage("§cIl est interdit d'envoyer des lien sur §4§lDEAD§1§lPVP §c§l !");
                 return;
@@ -279,7 +277,9 @@ public class EventListener implements Listener {
         }
 
         e.setFormat(getPrefix(p) + p.getDisplayName() + ": §f" + msg);
+
     }
+
 
     @EventHandler
     public void OnCreaturespawn(CreatureSpawnEvent e){
@@ -296,6 +296,10 @@ public class EventListener implements Listener {
         if (e.getItem() != null) {
             if (e.getItem().getType().equals(Material.WRITTEN_BOOK)) {
                 BookMeta meta = (BookMeta) e.getItem().getItemMeta();
+                if(meta == null) return;
+                if(!meta.hasTitle())return;
+                if(!meta.hasAuthor())return;
+
                 if (meta.getTitle().contains("§dCarnet de commandes") && meta.getAuthor().equals("§4§lDEAD§9§lPVP")) {
                     e.setCancelled(true);
                     p.openInventory(GuiUtils.mainMenu(p));
@@ -321,7 +325,7 @@ public class EventListener implements Listener {
     public void onInteractInventory (InventoryClickEvent e) {
         Player p = (Player) e.getWhoClicked();
         if (e.getClickedInventory() == null) return;
-
+        if(e.getCurrentItem() == null)return;
         if (Objects.requireNonNull(e.getCurrentItem()).getType().equals(Material.WRITTEN_BOOK)) {
             BookMeta meta = (BookMeta) e.getCurrentItem().getItemMeta();
             if (meta.getTitle().contains("§dCarnet de commandes") && meta.getAuthor().equals("§4§lDEAD§9§lPVP")) {
@@ -415,11 +419,11 @@ public class EventListener implements Listener {
             }
         }.runTaskLater(Main.getInstance(), 5L);
 
-        if(e.getPlayer().hasPlayedBefore() && !hasAccepted.contains (e.getPlayer ()) && !e.getMessage ().equals ("/dpaccept")){
-            BookUtils.openBook (book, e.getPlayer ());
-            e.setCancelled (true);
-            e.getPlayer ().sendMessage ("§c§lMerci de bien vouloir accepter les régles du créatif avant de pouvoir jouer.");
-        }
+        //if(e.getPlayer().hasPlayedBefore() && !hasAccepted.contains (e.getPlayer ()) && !e.getMessage ().equals ("/dpaccept")){
+        //    BookUtils.openBook (book, e.getPlayer ());
+        //    e.setCancelled (true);
+        //    e.getPlayer ().sendMessage ("§c§lMerci de bien vouloir accepter les régles du créatif avant de pouvoir jouer.");
+        //}
         if (( e.getMessage().startsWith("/minecraft:list") || e.getMessage().startsWith("/list") || e.getMessage().startsWith("/pl")
                 || e.getMessage().startsWith("/plugins") || e.getMessage().startsWith("/help")|| e.getMessage().startsWith("/bukkit:pl")
                 || e.getMessage().startsWith("/bukkit:plugins") || e.getMessage().startsWith("/bukkit:?") || e.getMessage().startsWith("/?")
@@ -438,6 +442,23 @@ public class EventListener implements Listener {
     @EventHandler
     public void onLeave(PlayerQuitEvent e){
         e.setQuitMessage("§c[§4-§d] " + getPrefix(e.getPlayer())+e.getPlayer().getName());;
+        Player player = e.getPlayer();
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            p.showPlayer(player);
+        }
+        if(Vanich.inVanish.contains(e.getPlayer())){
+            AdminInv ai = AdminInv.getFromPlayer(player);
+            ai.destroy();
+            Main.getInstance().staffModePlayers.remove(player);
+            ai.giveInv(player);
+            player.sendMessage("§bVous n'êtes plus en vanish !");
+            player.setAllowFlight(false);
+            player.setFlying(false);
+            player.setPlayerListName(EventListener.getPrefix(player) +player.getName());
+            Vanich.inVanish.remove(player);
+        }
+
+
     }
 
     public static String getPrefix(Player p) {

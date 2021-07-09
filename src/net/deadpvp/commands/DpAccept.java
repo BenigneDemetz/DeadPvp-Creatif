@@ -12,7 +12,7 @@ public class DpAccept implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if(sender instanceof Player){
             Player p = (Player)sender;
-            EventListener.hasAccepted.add (p);
+            //EventListener.hasAccepted.add (p);
         }
         return false;
     }
