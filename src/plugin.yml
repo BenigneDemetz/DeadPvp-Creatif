@@ -13,3 +13,5 @@ commands:
     usage: "§cUtilisation: /speed [0-10]"
   spawn:
   livrebeta:
+  nick:
+    usage: "§cUtilisation: /nick <pseudo>"
