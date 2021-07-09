@@ -49,7 +49,7 @@ public class Main extends JavaPlugin implements PluginMessageListener {
         this.getServer().getMessenger().registerIncomingPluginChannel(this, "deadpvp:return", this);
         PluginManager pm = Bukkit.getServer ().getPluginManager ();
         pm.registerEvents(new EventListener(), this);
-        getCommand ("hub").setExecutor (new hub (this));
+//        getCommand ("hub").setExecutor (new hub (this));
         getCommand ("dpaccept").setExecutor (new DpAccept ());
 //        getCommand ("test").setExecutor (new TestCommand ());
         getCommand ("speed").setExecutor (new Speed());

@@ -7,8 +7,8 @@ api-version: 1.16
 commands:
   dpaccept:
     description: accept
-  hub:
-    aliases: lobby
+#  hub:
+#    aliases: lobby
   speed:
     usage: "§cUtilisation: /speed [0-10]"
   spawn:
