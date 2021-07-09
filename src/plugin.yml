@@ -13,3 +13,10 @@ commands:
     usage: "§cUtilisation: /speed [0-10]"
   spawn:
   livrebeta:
+  vanish:
+    permission: chat.builder
+  tpa:
+  tpyes:
+    aliases: tpaccept
+  tpno:
+    aliases: tprefuse

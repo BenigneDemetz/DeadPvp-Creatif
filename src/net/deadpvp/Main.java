@@ -4,18 +4,19 @@ import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 import net.deadpvp.commands.*;
 import net.deadpvp.events.EventListener;
+import net.deadpvp.utils.AdminInv;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.math.BigInteger;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Main extends JavaPlugin implements PluginMessageListener {
     private static Main instance;
@@ -23,6 +24,10 @@ public class Main extends JavaPlugin implements PluginMessageListener {
     private Connection connection;
     public String host, database, username, password;
     public int port;
+
+    public ArrayList<Player> vanishedPlayers = new ArrayList<Player>();
+    public ArrayList<Player> staffModePlayers = new ArrayList<Player>();
+    public HashMap<Player, AdminInv> adminPlayerHashmap = new HashMap<>();
 
     
     @Override
@@ -40,20 +45,10 @@ public class Main extends JavaPlugin implements PluginMessageListener {
         getCommand ("speed").setExecutor (new Speed());
         getCommand ("spawn").setExecutor (new Spawn());
         getCommand ("livrebeta").setExecutor (new LivreBeta());
-        new BukkitRunnable () {
-            @Override
-            public void run() {
-                for(Player pl : Bukkit.getOnlinePlayers ()){
-                    pl.setGameMode (GameMode.CREATIVE);
-                    EventListener.hasAccepted.add(pl);
-                }
-            }
-        }.runTaskLater (Main.getInstance (), 20L);
-
-        for(Player pl : Bukkit.getOnlinePlayers ()){
-            pl.setGameMode (GameMode.CREATIVE);
-            EventListener.hasAccepted.add(pl);
-        }
+        getCommand("Vanish").setExecutor(new Vanich());
+        getCommand("tpa").setExecutor(new tpa());
+        getCommand("tpyes").setExecutor(new tpyes());
+        getCommand("tpno").setExecutor(new tpno());
 
         super.onEnable ();
     }
