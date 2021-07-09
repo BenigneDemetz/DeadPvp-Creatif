@@ -36,7 +36,7 @@ public class EventListener implements Listener {
     public static Map<Player,Player> lastdamage = new HashMap<Player,Player>();
     Map<Player, Long> spam = new HashMap<Player, Long>();
     Map<Player, String> doublemsg = new HashMap<Player, String>();
-    //public static ArrayList<Player> hasAccepted = new ArrayList<> ();
+    public static ArrayList<Player> hasAccepted = new ArrayList<> ();
     private static final ItemStack book = BookUtils.createBook ();
 
     @EventHandler
@@ -50,6 +50,8 @@ public class EventListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onJoin(PlayerJoinEvent e) {
 
+        Player p = e.getPlayer();
+
         if(!p.hasPermission("deadpvp.vanich")){
             for(Player playervanished : Vanich.inVanish){
                 p.hidePlayer(playervanished);
@@ -58,7 +60,6 @@ public class EventListener implements Listener {
         Location spawn = new Location(Bukkit.getServer().getWorld("Creatif"), 0.5,65.1,80.5, 0, 0);
         p.teleport(spawn);
         p.setPlayerListName(getPrefix(p)+p.getName());
-        Player player = e.getPlayer();
         e.setJoinMessage ("§2[§4+§a] "+getPrefix(p) + e.getPlayer ().getDisplayName ());
         e.getPlayer ().setGameMode (GameMode.CREATIVE);
         new BukkitRunnable () {
@@ -91,14 +92,14 @@ public class EventListener implements Listener {
 
     }
 
-//    @EventHandler
-//    public void onMove(PlayerMoveEvent e){
-        //aucun event existe pour savoir quand le mec ferme un book donc j'ai un peu triché, l'event se trigger meme si il ne bouge que sa tete.
-//        if (!hasAccepted.contains(e.getPlayer())) {
-//            BookUtils.openBook(book, e.getPlayer());
-//            e.getPlayer().sendMessage("§c§lMerci de bien vouloir accepter les régles du créatif avant de pouvoir jouer.");
-//        }
-    //}
+    @EventHandler
+    public void onMove(PlayerMoveEvent e){
+//        aucun event existe pour savoir quand le mec ferme un book donc j'ai un peu triché, l'event se trigger meme si il ne bouge que sa tete.
+        if (!hasAccepted.contains(e.getPlayer()) && !e.getPlayer().hasPlayedBefore()) {
+            BookUtils.openBook(book, e.getPlayer());
+            e.getPlayer().sendMessage("§c§lMerci de bien vouloir accepter les régles du créatif avant de pouvoir jouer.");
+        }
+    }
 
     @EventHandler
     public void Signit(SignChangeEvent e){
