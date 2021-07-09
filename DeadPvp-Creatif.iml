@@ -8,7 +8,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="spigot-1.16.1" level="project" />
-    <orderEntry type="library" name="ProtocolLib" level="project" />
     <orderEntry type="library" name="MarriageMaster" level="project" />
+    <orderEntry type="library" name="ProtocolLib" level="project" />
   </component>
 </module>

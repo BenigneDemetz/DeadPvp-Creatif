@@ -27,8 +27,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scoreboard.*;
 
 import java.awt.print.Book;
+import java.sql.SQLException;
 import java.util.*;
 
 public class EventListener implements Listener {
@@ -36,6 +38,9 @@ public class EventListener implements Listener {
     public static Map<Player,Player> lastdamage = new HashMap<Player,Player>();
     Map<Player, Long> spam = new HashMap<Player, Long>();
     Map<Player, String> doublemsg = new HashMap<Player, String>();
+    Map<Player, Boolean> saybienvenue = new HashMap<Player, Boolean>();
+
+    public static ArrayList<Player> freeze = new ArrayList<> ();
     public static ArrayList<Player> hasAccepted = new ArrayList<> ();
     private static final ItemStack book = BookUtils.createBook ();
 
@@ -49,6 +54,7 @@ public class EventListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onJoin(PlayerJoinEvent e) {
+
 
         Player p = e.getPlayer();
 
@@ -81,6 +87,9 @@ public class EventListener implements Listener {
         if(!p.hasPlayedBefore()){
             Bukkit.broadcastMessage("§7Souhaitez la bienvenue à §6"+p.getName()+"§7 pour reçevoir une récompense !");
             bienvenue = true;
+            for(Player pp : Bukkit.getOnlinePlayers()){
+                saybienvenue.put(pp,false);
+            }
             p.sendMessage("§6Bienvenue sur le créatif de §4§lDEAD§1§lPVP §6!\n§6Pour créer un plot faites la commande /plot auto ou /plot claim sur un plot qui est vide.\nEn cas de problème contactez le staff sur §9discord: discord.gg/23kPxkbzDg");
             new BukkitRunnable() {
                 @Override
@@ -94,6 +103,10 @@ public class EventListener implements Listener {
 
     @EventHandler
     public void onMove(PlayerMoveEvent e){
+        if(freeze.contains(e.getPlayer())){
+            e.setCancelled(true);
+            e.getPlayer().sendTitle("§c§lVous êtes freeze !","§6§lMerci de venir sur discord: discord.gg/23kPxkbzDg",10,0,0);
+        }
 //        aucun event existe pour savoir quand le mec ferme un book donc j'ai un peu triché, l'event se trigger meme si il ne bouge que sa tete.
         if (!hasAccepted.contains(e.getPlayer()) && !e.getPlayer().hasPlayedBefore()) {
             BookUtils.openBook(book, e.getPlayer());
@@ -253,7 +266,7 @@ public class EventListener implements Listener {
 
 
 
-        if((e.getMessage().toLowerCase().contains("bienvenue") || e.getMessage().toLowerCase().contains("bienvenue!")) && bienvenue == true){
+        if(((e.getMessage().toLowerCase().contains("bienvenue") || e.getMessage().toLowerCase().contains("bienvenue!")) && bienvenue == true) && saybienvenue.get(p)== false){
             Random r = new Random();
             int karmatogive = r.nextInt(4) + 1;
             try {
@@ -265,6 +278,7 @@ public class EventListener implements Listener {
                     sqlUtilities.insertData("moneyserv", p.getName(), 0, karmatogive, "player, mystiques, karma");
                 }
                 e.getPlayer().sendMessage("§d+"+karmatogive+" Karma");
+                saybienvenue.put(p,true);
             }
             catch (Exception ee) {
                 ee.printStackTrace();
@@ -322,6 +336,9 @@ public class EventListener implements Listener {
             }
         }
     }
+
+
+
     @EventHandler
     public void onInteractInventory (InventoryClickEvent e) {
         Player p = (Player) e.getWhoClicked();
@@ -520,7 +537,109 @@ public class EventListener implements Listener {
         e.setCancelled(true);
     }
 
+    public static void setScoreBoard(Player player) {
+        TimeZone tz = TimeZone.getTimeZone("Europe/Paris");
+        Date date = new Date();
+        int x = (22-date.getHours())-1;
+        int y = 59-date.getMinutes();
+        String y2;
+        if (y < 10){
+            int temp = y;
+            y2 = "0"+y;
+        }else{
+            y2 = ""+y;
+        }
+        Scoreboard board = Bukkit.getScoreboardManager().getNewScoreboard();
+        Objective obj = board.registerNewObjective("§d§lCREATIF", "dummy");
+        obj.setDisplaySlot(DisplaySlot.SIDEBAR);
+        Score score15 = obj.getScore("§c§l§r");
+        Score score14 = obj.getScore("§b§lVOTRE PROFIL");
+        Score score11 = obj.getScore("§f§2 ");
+        Score score10 = obj.getScore("§c§lSERVEUR");
+        Score score6 = obj.getScore("§f§l§c");
+        if(player.hasPermission("chat.dev")){
+            Score score7 = obj.getScore("§4§lADMIN");
+        }
 
+        Score score3 = obj.getScore("§7§l§c");
+        //Score score3 = obj.getScore("§dEn cas de bug faites");
+        //Score score2 = obj.getScore("§d/bug <votre bug> !");
+        Score score1 = obj.getScore("§c§b§l---------------§r");
+        Score score0 = obj.getScore("§b§lmc.deadpvp.com");
+
+        score0.setScore(0);
+        score1.setScore(1);
+        //score2.setScore(2);
+        //score3.setScore(3);
+        score6.setScore(6);
+
+        score3.setScore(3);
+        score11.setScore(11);
+        score15.setScore(15);
+
+        score10.setScore(10);
+
+        score14.setScore(14);
+
+        Team Mystiques = board.registerNewTeam("Mystiques");
+        Mystiques.addEntry(ChatColor.GOLD + "" + ChatColor.GOLD);
+        Mystiques.setPrefix(ChatColor.WHITE+"§f≫ Mystique");
+        try {
+            Object mystiqueint = sqlUtilities.getData("moneyserv","player",player.getName(),"mystiques","Int");
+            Mystiques.setSuffix("§fs: §d"+ mystiqueint.toString());
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        obj.getScore(ChatColor.GOLD + "" + ChatColor.GOLD).setScore(12);
+
+
+        Team Karma = board.registerNewTeam("Karma");
+        Karma.addEntry(ChatColor.LIGHT_PURPLE + "" + ChatColor.DARK_PURPLE);
+        Karma.setPrefix(ChatColor.WHITE+"§f≫ Karma: ");
+        try {
+            Object karmaint = sqlUtilities.getData("moneyserv","player",player.getName(),"karma","Int");
+            Karma.setSuffix("§d"+karmaint.toString());
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        };
+        obj.getScore(ChatColor.LIGHT_PURPLE + "" + ChatColor.DARK_PURPLE).setScore(11);
+
+        Team grade= board.registerNewTeam("grade");
+        grade.addEntry(ChatColor.GOLD + "" + ChatColor.LIGHT_PURPLE);
+        grade.setPrefix(ChatColor.WHITE+"≫ Grade: ");
+        grade.setSuffix(getPrefix(player)+"");
+        obj.getScore(ChatColor.GOLD + "" + ChatColor.LIGHT_PURPLE).setScore(13);
+
+        Team onlineCounter = board.registerNewTeam("onlineCounter");
+        onlineCounter.addEntry(ChatColor.LIGHT_PURPLE + "" + ChatColor.MAGIC);
+        onlineCounter.setPrefix(ChatColor.WHITE+"≫ Créatif: ");
+        onlineCounter.setSuffix("§6"+Bukkit.getOnlinePlayers().size()+"/§c"+Main.getInstance().playerCount);
+        obj.getScore(ChatColor.LIGHT_PURPLE + "" + ChatColor.MAGIC).setScore(9);
+
+
+
+
+        player.setScoreboard(board);
+    }
+    public static void updateScoreBoard(Player player){
+        Scoreboard board = player.getScoreboard();
+        try {
+            Object karmaint = sqlUtilities.getData("moneyserv","player",player.getName(),"karma","Int");
+            board.getTeam("Karma").setSuffix("§d"+karmaint.toString());
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+        Object mystiqueint = null;
+        try {
+            mystiqueint = sqlUtilities.getData("moneyserv","player",player.getName(),"mystiques","Int");
+            board.getTeam("Mystiques").setSuffix("§fs: §d"+ mystiqueint.toString());
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        board.getTeam("grade").setSuffix(getPrefix(player)+"");
+        board.getTeam("onlineCounter").setSuffix("§6"+Bukkit.getOnlinePlayers().size()+"/§c"+Main.getInstance().playerCount);
+    }
 
 
 }

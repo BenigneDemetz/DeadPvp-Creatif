@@ -29,7 +29,7 @@ import java.util.List;
 
 public class Main extends JavaPlugin implements PluginMessageListener {
     private static Main instance;
-
+    public int playerCount;
     private Connection connection;
     public String host, database, username, password;
     public int port;
@@ -60,6 +60,7 @@ public class Main extends JavaPlugin implements PluginMessageListener {
         getCommand("tpyes").setExecutor(new tpyes());
         getCommand("tpno").setExecutor(new tpno());
         getCommand ("nick").setExecutor (new Nick());
+        getCommand ("freeze").setExecutor (new freeze());
         new BukkitRunnable () {
             @Override
             public void run() {
@@ -126,10 +127,16 @@ public class Main extends JavaPlugin implements PluginMessageListener {
         String subchannel = in.readUTF();
         if (subchannel.equals("command")) {
             String cmd = in.readUTF();
-            System.out.println("[Boutiuqe]");
+            System.out.println("[Boutique]");
             System.out.println(cmd);
             player.setPlayerListName(EventListener.getPrefix(player)+player.getName());
             Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), cmd);
+        }
+        if (subchannel.equals ("PlayerCount")) {
+            String server = in.readUTF();
+            if (server.equalsIgnoreCase("all")) {
+                playerCount = in.readInt();
+            }
         }
     }
 
