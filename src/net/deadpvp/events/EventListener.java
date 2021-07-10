@@ -3,6 +3,8 @@ package net.deadpvp.events;
 import at.pcgamingfreaks.MarriageMaster.Bukkit.API.Marriage;
 import at.pcgamingfreaks.MarriageMaster.Bukkit.API.MarriagePlayer;
 import at.pcgamingfreaks.MarriageMaster.Bukkit.MarriageMaster;
+import com.yapzhenyie.GadgetsMenu.GadgetsMenu;
+import com.yapzhenyie.GadgetsMenu.api.GadgetsMenuAPI;
 import net.deadpvp.Main;
 import net.deadpvp.commands.Vanich;
 import net.deadpvp.utils.*;
@@ -49,9 +51,6 @@ public class EventListener implements Listener {
         e.getPlayer().setGameMode(GameMode.CREATIVE);
     }
 
-
-
-
     @EventHandler(priority = EventPriority.LOWEST)
     public void onJoin(PlayerJoinEvent e) {
 
@@ -65,7 +64,7 @@ public class EventListener implements Listener {
         }
         Location spawn = new Location(Bukkit.getServer().getWorld("Creatif"), 0.5,65.1,80.5, 0, 0);
         p.teleport(spawn);
-        p.setPlayerListName(getPrefix(p)+p.getName());
+        p.setPlayerListName(getPrefix(p)+p.getDisplayName());
         e.setJoinMessage ("§a[§4+§a] "+getPrefix(p) + e.getPlayer ().getDisplayName ());
         e.getPlayer ().setGameMode (GameMode.CREATIVE);
         new BukkitRunnable () {
@@ -376,8 +375,8 @@ public class EventListener implements Listener {
                     p.openInventory(GuiUtils.mainMenu(p));
 //                    p.getOpenInventory().setItem(3*9+6,GuiUtils.creaItem(true));
                     break;
-                case GRASS:
-                    p.performCommand("");
+                case GRASS_BLOCK:
+                    p.performCommand("spawn");
                     break;
                 case OAK_DOOR:
                     p.performCommand("p home");
@@ -386,7 +385,7 @@ public class EventListener implements Listener {
                     p.performCommand("gadgetsmenu menu main");
                     break;
                 case ENDER_CHEST:
-                    p.performCommand("spawn");
+                    GadgetsMenu.getPlayerManager(p).openMysteryVaultMenu(1);
                     break;
                 case END_PORTAL_FRAME:
                     p.performCommand("hub");
@@ -479,6 +478,33 @@ public class EventListener implements Listener {
 
     }
 
+    @EventHandler
+    public void onDropItem (PlayerDropItemEvent e) {
+        Player p = e.getPlayer();
+        e.getItemDrop();
+        if (e.getItemDrop().getItemStack().getType().equals(Material.WRITTEN_BOOK)) {
+            BookMeta meta = (BookMeta) e.getItemDrop().getItemStack().getItemMeta();
+            if (meta.getTitle().contains("§dCarnet de commandes") && meta.getAuthor().equals("§4§lDEAD§9§lPVP")) {
+                e.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onItemSpawn (ItemSpawnEvent e) {
+        if (e.getEntity().getItemStack().getType().equals(Material.WRITTEN_BOOK)) {
+            BookMeta meta = (BookMeta) e.getEntity().getItemStack().getItemMeta();
+            if (meta.getTitle().contains("§dCarnet de commandes") && meta.getAuthor().equals("§4§lDEAD§9§lPVP")) {
+                e.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler
+    private void onWeatherChange (WeatherChangeEvent e) {
+        e.setCancelled(true);
+    }
+
     public static String getPrefix(Player p) {
         if (p.getName().equals("Red_Spash")) return ChatColor.RED+"[Développeur] ";
         if (p.getName().equals("Arnaud013")) return ChatColor.RED+"[Développeur] ";
@@ -508,33 +534,6 @@ public class EventListener implements Listener {
 
 
         else return "§7";
-    }
-
-    @EventHandler
-    public void onDropItem (PlayerDropItemEvent e) {
-        Player p = e.getPlayer();
-        e.getItemDrop();
-        if (e.getItemDrop().getItemStack().getType().equals(Material.WRITTEN_BOOK)) {
-            BookMeta meta = (BookMeta) e.getItemDrop().getItemStack().getItemMeta();
-            if (meta.getTitle().contains("§dCarnet de commandes") && meta.getAuthor().equals("§4§lDEAD§9§lPVP")) {
-                e.setCancelled(true);
-            }
-        }
-    }
-
-    @EventHandler
-    public void onItemSpawn (ItemSpawnEvent e) {
-        if (e.getEntity().getItemStack().getType().equals(Material.WRITTEN_BOOK)) {
-            BookMeta meta = (BookMeta) e.getEntity().getItemStack().getItemMeta();
-            if (meta.getTitle().contains("§dCarnet de commandes") && meta.getAuthor().equals("§4§lDEAD§9§lPVP")) {
-                e.setCancelled(true);
-            }
-        }
-    }
-
-    @EventHandler
-    private void onWeatherChange (WeatherChangeEvent e) {
-        e.setCancelled(true);
     }
 
     public static void setScoreBoard(Player player) {

@@ -1,27 +1,15 @@
 package net.deadpvp.commands;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.events.PacketAdapter;
-import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.wrappers.EnumWrappers;
-import com.comphenix.protocol.wrappers.PlayerInfoData;
-import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import net.deadpvp.Main;
 import net.deadpvp.events.EventListener;
-import net.deadpvp.utils.NameChanger;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.bukkit.scheduler.BukkitRunnable;
 
-import javax.naming.Name;
 import java.util.ArrayList;
 import java.util.List;
 

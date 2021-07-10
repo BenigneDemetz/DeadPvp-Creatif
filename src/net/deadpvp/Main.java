@@ -49,7 +49,7 @@ public class Main extends JavaPlugin implements PluginMessageListener {
         this.getServer().getMessenger().registerIncomingPluginChannel(this, "deadpvp:return", this);
         PluginManager pm = Bukkit.getServer ().getPluginManager ();
         pm.registerEvents(new EventListener(), this);
-//        getCommand ("hub").setExecutor (new hub (this));
+        getCommand ("hub").setExecutor (new hub (this));
         getCommand ("dpaccept").setExecutor (new DpAccept ());
 //        getCommand ("test").setExecutor (new TestCommand ());
         getCommand ("speed").setExecutor (new Speed());
@@ -61,20 +61,9 @@ public class Main extends JavaPlugin implements PluginMessageListener {
         getCommand("tpno").setExecutor(new tpno());
         getCommand ("nick").setExecutor (new Nick());
         getCommand ("freeze").setExecutor (new freeze());
-        new BukkitRunnable () {
-            @Override
-            public void run() {
-                for(Player pl : Bukkit.getOnlinePlayers ()){
-                    pl.setGameMode (GameMode.CREATIVE);
-                    EventListener.hasAccepted.add(pl);
-                }
-            }
-        }.runTaskLater (Main.getInstance (), 20L);
+        getCommand ("getname").setExecutor (new getName());
 
-        for(Player pl : Bukkit.getOnlinePlayers ()){
-            pl.setGameMode (GameMode.CREATIVE);
-            EventListener.hasAccepted.add(pl);
-        }
+        EventListener.hasAccepted.addAll(Bukkit.getOnlinePlayers());
         ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(Main.getInstance(), PacketType.Play.Server.PLAYER_INFO) {
             @Override
             public void onPacketSending(PacketEvent event) {

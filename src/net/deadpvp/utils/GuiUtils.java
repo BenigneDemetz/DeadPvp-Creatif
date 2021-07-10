@@ -33,10 +33,13 @@ public class GuiUtils {
         itemplot.setItemMeta(meta);
         inventory.setItem(1*9+2, itemplot);
 
-        ItemBuilder cosmetique = new ItemBuilder(Material.NETHER_STAR).setName("§d§lCosmétique");
+        ItemBuilder cosmetique = new ItemBuilder(Material.NETHER_STAR).setName("§d§lCosmétiques");
         inventory.setItem(1*9+6, cosmetique.toItemStack());
 
-        ItemBuilder spawn = new ItemBuilder(Material.ENDER_CHEST).setName("§d§lSpawn");
+        ItemBuilder openVault = new ItemBuilder(Material.ENDER_CHEST).setName("§d§lOuvrir Mystery Boxes");
+        inventory.setItem(1*9+7, openVault.toItemStack());
+
+        ItemBuilder spawn = new ItemBuilder(Material.GRASS_BLOCK).setName("§d§lSpawn");
         inventory.setItem(3*9+1, spawn.toItemStack());
 
         ItemBuilder hub = new ItemBuilder(Material.END_PORTAL_FRAME).setName("§d§lHub");
