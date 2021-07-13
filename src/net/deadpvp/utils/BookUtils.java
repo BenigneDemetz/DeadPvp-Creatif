@@ -29,7 +29,7 @@ public class BookUtils {
             
             //quand il clique pour accepter ça trigger une cmd et ajoute le mec dans une arraylist, c'est pas ouf comme méthode mais nique ça mardhe
             //et c'est 2h du mat
-            TextComponent accept = new TextComponent ("\n\n§a§l  Cliquez ici pour \n      accepter.");
+            TextComponent accept = new TextComponent ("\n\n§a§l      Accepter.");
             accept.setClickEvent (new ClickEvent (ClickEvent.Action.RUN_COMMAND, "/dpaccept"));
             
             //Page 1, copier coller pour en ajouter une autre, pour le texte, fait d'autre textcomponent et tu les met dans le tableau

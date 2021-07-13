@@ -16,6 +16,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityToggleGlideEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -90,6 +91,8 @@ public class EventListener implements Listener {
                 saybienvenue.put(pp,false);
             }
             p.sendMessage("§6Bienvenue sur le créatif de §4§lDEAD§1§lPVP §6!\n§6Pour créer un plot faites la commande /plot auto ou /plot claim sur un plot qui est vide.\nEn cas de problème contactez le staff sur §9discord: discord.gg/23kPxkbzDg");
+            e.getPlayer().sendMessage("§c§lMerci de bien vouloir accepter les régles du créatif avant de pouvoir jouer.");
+            BookUtils.openBook(BookUtils.createBook(), e.getPlayer());
             new BukkitRunnable() {
                 @Override
                 public void run() {
@@ -97,7 +100,7 @@ public class EventListener implements Listener {
                 }
             }.runTaskLater(Main.getInstance(), 300);
         }
-
+//        if (!hasAccepted.contains(e.getPlayer()) && !e.getPlayer().hasPlayedBefore()) {
     }
 
     @EventHandler
@@ -107,10 +110,10 @@ public class EventListener implements Listener {
             e.getPlayer().sendTitle("§c§lVous êtes freeze !","§6§lMerci de venir sur discord: discord.gg/23kPxkbzDg",10,0,0);
         }
 //        aucun event existe pour savoir quand le mec ferme un book donc j'ai un peu triché, l'event se trigger meme si il ne bouge que sa tete.
-        if (!hasAccepted.contains(e.getPlayer()) && !e.getPlayer().hasPlayedBefore()) {
-            BookUtils.openBook(book, e.getPlayer());
-            e.getPlayer().sendMessage("§c§lMerci de bien vouloir accepter les régles du créatif avant de pouvoir jouer.");
-        }
+//        if (!hasAccepted.contains(e.getPlayer()) && !e.getPlayer().hasPlayedBefore()) {
+//            BookUtils.openBook(book, e.getPlayer());
+//            e.getPlayer().sendMessage("§c§lMerci de bien vouloir accepter les régles du créatif avant de pouvoir jouer.");
+//        }
     }
 
     @EventHandler
@@ -506,6 +509,7 @@ public class EventListener implements Listener {
     }
 
     public static String getPrefix(Player p) {
+        if ( p.getName().equals("uhu376"))  return ChatColor.BLUE+"[Builder]";
         if (p.getName().equals("Red_Spash")) return ChatColor.RED+"[Développeur] ";
         if (p.getName().equals("Arnaud013")) return ChatColor.RED+"[Développeur] ";
         if (p.hasPermission("chat.admin")) return ChatColor.DARK_RED+"[Administrateur] ";
@@ -521,6 +525,7 @@ public class EventListener implements Listener {
     }
 
     public static String getPrefixColor(Player p) {
+        if (p.getName().equals("uhu376")) return "§c";
         if (p.getName().equals("Red_Spash")) return "§c";
         if (p.getName().equals("Arnaud013")) return "§c";
         if (p.hasPermission("chat.admin")) return "§4";
