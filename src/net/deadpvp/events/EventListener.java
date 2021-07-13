@@ -1,29 +1,22 @@
 package net.deadpvp.events;
 
 
-import com.yapzhenyie.GadgetsMenu.GadgetsMenu;
-import net.deadpvp.Main;
-import net.deadpvp.commands.Vanich;
-import net.deadpvp.utils.*;
-import org.bukkit.*;
+import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.event.world.PortalCreateEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scoreboard.*;
 
-import java.sql.SQLException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class EventListener implements Listener {
     public static Map<Player,Player> lastdamage = new HashMap<Player,Player>();
