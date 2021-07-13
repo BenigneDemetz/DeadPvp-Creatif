@@ -43,7 +43,7 @@ public class ChatListeners implements Listener {
                 maj++;
             }
         }
-        if(!p.hasPermission("chat.admin") && maj >= 5){
+        if(!p.hasPermission("chat.admin") && maj > 5){
             msg = msg.toLowerCase(); //Methode toLowerCase, plus simple que de loop une nouvelle fois a travers chaque caractere pour les remmetre en minuscule
         }
 
