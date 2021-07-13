@@ -2,6 +2,7 @@ package net.deadpvp.commands;
 
 import net.deadpvp.Main;
 import net.deadpvp.events.EventListener;
+import net.deadpvp.utils.ChatUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -15,50 +16,42 @@ import java.util.List;
 
 public class Nick implements CommandExecutor, TabCompleter {
 
-
-    private String nametoset;
-
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
-        if (commandSender.hasPermission("deadpvp.constructeur")) {
-            if (!(commandSender instanceof Player)) return false;
+        if (!(commandSender.hasPermission("deadpvp.constructeur"))) return true;
 
-            Player p = (Player) commandSender;
+        if (!(commandSender instanceof Player)) return false;
 
-            if (strings.length >= 1) {
-                String name = "";
-                if (strings[0].equals("reset")) {
-                    name += p.getName();
-                    Main.getInstance().nickname.put(p.getName(), name);
+        Player p = (Player) commandSender;
 
-                } else {
-                    for (String args : strings) {
-                        name += args;
-                    }
-                }
-
-
-                if (p.isOp()) {
-                    name = name.replace("&k", "§k");
-                }
-                if (name.length() >= 13) {
-                    p.sendMessage("§cTu ne peux pas dépasser 13 caractères");
-                    return true;
-                }
-                p.setPlayerListName(EventListener.getPrefix(p) + name);
-                p.setDisplayName(getColor(p) + name);
-                p.setCustomName(p.getName());
-
-                p.sendMessage("§aTon pseudo est maintenant §d" + name);
-
+        if (strings.length >= 1) {
+            String name = "";
+            if (strings[0].equals("reset")) {
+                name += p.getName();
                 Main.getInstance().nickname.put(p.getName(), name);
+            } else {
+                for (String args : strings) {
+                    name += args;
+                }
+            }
+            if (p.isOp()) {
+                name = name.replace("&k", "§k");
+            }
+            if (name.length() >= 13) {
+                p.sendMessage("§cTu ne peux pas dépasser 13 caractères");
+                return true;
+            }
+            p.setPlayerListName(ChatUtils.getPrefix(p) + name);
+            p.setDisplayName(getColor(p) + name);
+            p.setCustomName(p.getName());
 
-                Bukkit.getOnlinePlayers().forEach(players -> players.hidePlayer(Main.getInstance(), p));
-                Bukkit.getOnlinePlayers().forEach(players -> players.showPlayer(Main.getInstance(), p));
+            p.sendMessage("§aTon pseudo est maintenant §d" + name);
 
+            Main.getInstance().nickname.put(p.getName(), name);
 
-            } else return false;
-        }
+            Bukkit.getOnlinePlayers().forEach(players -> players.hidePlayer(Main.getInstance(), p));
+            Bukkit.getOnlinePlayers().forEach(players -> players.showPlayer(Main.getInstance(), p));
+    }
 
         return true;
     }

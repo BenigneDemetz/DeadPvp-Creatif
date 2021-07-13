@@ -16,7 +16,7 @@ public class tpyes implements CommandExecutor {
             if(tpa.tpa.containsKey(p)){
                 Player tphere = tpa.tpa.get(p);
                 tphere.sendMessage("§5§lTéléportation>>> §2Téléportation en cours !");
-                commandSender.sendMessage("§5§lTéléportation>>> §2Téléportation acceptée !");
+                p.sendMessage("§5§lTéléportation>>> §2Téléportation acceptée !");
                 tphere.teleport(p);
                 tphere.playSound(tphere.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT,10,2);
                 p.playSound(p.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT,10,2);

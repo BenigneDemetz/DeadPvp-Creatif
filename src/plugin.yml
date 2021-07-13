@@ -18,6 +18,7 @@ commands:
   vanish:
     permission: chat.builder
   tpa:
+    usage: "/tpa <Player>"
   tpyes:
     aliases: tpaccept
   tpno:

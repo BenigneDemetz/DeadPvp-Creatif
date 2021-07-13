@@ -9,49 +9,54 @@ import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
+import io.netty.util.collection.CharObjectMap;
 import net.deadpvp.commands.*;
+import net.deadpvp.events.ChatListeners;
 import net.deadpvp.events.EventListener;
+import net.deadpvp.events.InventoryListeners;
+import net.deadpvp.events.PlayerListeners;
+import net.deadpvp.gui.PlayerGuiUtils;
 import net.deadpvp.utils.AdminInv;
+import net.deadpvp.utils.ChatUtils;
+import net.deadpvp.utils.sqlUtilities;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.craftbukkit.libs.org.apache.commons.lang3.reflect.FieldUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.PluginMessageListener;
-import org.bukkit.scheduler.BukkitRunnable;
 
-import java.sql.*;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class Main extends JavaPlugin implements PluginMessageListener {
+
     private static Main instance;
     public int playerCount;
     private Connection connection;
-    public String host, database, username, password;
-    public int port;
 
+    public static ArrayList<Player> freeze = new ArrayList<> ();
     public ArrayList<Player> vanishedPlayers = new ArrayList<Player>();
     public ArrayList<Player> staffModePlayers = new ArrayList<Player>();
     public HashMap<Player, AdminInv> adminPlayerHashmap = new HashMap<>();
     public HashMap<String, String> nickname = new HashMap<>();
+    private static final HashMap<Player, PlayerGuiUtils> playerGuiUtilsMap = new HashMap();
 
     
     @Override
     public void onEnable() {
-        mysqlSetup();
         instance = this;
+        sqlUtilities.mysqlSetup();
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         this.getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", this);
         this.getServer().getMessenger().registerIncomingPluginChannel(this, "deadpvp:return", this);
         PluginManager pm = Bukkit.getServer ().getPluginManager ();
         pm.registerEvents(new EventListener(), this);
+        pm.registerEvents(new InventoryListeners(), this);
+        pm.registerEvents(new ChatListeners(), this);
+        pm.registerEvents(new PlayerListeners(), this);
         getCommand ("hub").setExecutor (new hub (this));
-        getCommand ("dpaccept").setExecutor (new DpAccept ());
-//        getCommand ("test").setExecutor (new TestCommand ());
         getCommand ("speed").setExecutor (new Speed());
         getCommand ("spawn").setExecutor (new Spawn());
         getCommand ("livrebeta").setExecutor (new LivreBeta());
@@ -63,8 +68,8 @@ public class Main extends JavaPlugin implements PluginMessageListener {
         getCommand ("freeze").setExecutor (new freeze());
         getCommand ("getname").setExecutor (new getName());
 
-        EventListener.hasAccepted.addAll(Bukkit.getOnlinePlayers());
         ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(Main.getInstance(), PacketType.Play.Server.PLAYER_INFO) {
+
             @Override
             public void onPacketSending(PacketEvent event) {
                 if (event.getPacket().getPlayerInfoAction().read(0) != EnumWrappers.PlayerInfoAction.ADD_PLAYER) return;
@@ -93,6 +98,7 @@ public class Main extends JavaPlugin implements PluginMessageListener {
                 event.getPacket().getPlayerInfoDataLists().write(0, newPlayerInfoDataList);
             }
         });
+
         super.onEnable ();
     }
     
@@ -101,8 +107,7 @@ public class Main extends JavaPlugin implements PluginMessageListener {
         this.getServer().getMessenger().unregisterOutgoingPluginChannel(this, "BungeeCord");
         this.getServer().getMessenger().unregisterIncomingPluginChannel(this, "BungeeCord", this);
         this.getServer().getMessenger().unregisterIncomingPluginChannel(this, "deadpvp:return", this);
-        
-        
+
         super.onDisable ();
     }
     
@@ -118,7 +123,7 @@ public class Main extends JavaPlugin implements PluginMessageListener {
             String cmd = in.readUTF();
             System.out.println("[Boutique]");
             System.out.println(cmd);
-            player.setPlayerListName(EventListener.getPrefix(player)+player.getName());
+            player.setPlayerListName(ChatUtils.getPrefix(player)+player.getName());
             Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), cmd);
         }
         if (subchannel.equals ("PlayerCount")) {
@@ -129,41 +134,24 @@ public class Main extends JavaPlugin implements PluginMessageListener {
         }
     }
 
-    public void mysqlSetup(){
-        host = "localhost";
-        port = 3306;
-        database = "minecraftrebased";
-        username = "root";
-        password = "";
-
-        try {
-
-            synchronized (this) {
-                if (getConnection() != null && !getConnection().isClosed()) {
-                    return;
-                }
-
-                Class.forName("com.mysql.jdbc.Driver");
-                setConnection(DriverManager.getConnection("jdbc:mysql://" + this.host + ":"
-                        + this.port + "/" + this.database, this.username, this.password));
-
-                Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "MYSQL CONNECTED");
-            }
-        }
-        catch(SQLException e){
-            Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_RED + "MYSQL NOT CONNECTED #2");
-            e.printStackTrace();
-        }catch(ClassNotFoundException e){
-            e.printStackTrace();
-            Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_RED + "MYSQL NOT CONNECTED #3");
+    public static PlayerGuiUtils getPlayerGuiUtils(Player p){
+        PlayerGuiUtils playerGuiUtils;
+        if(!playerGuiUtilsMap.containsKey(p)){
+            playerGuiUtils = new PlayerGuiUtils(p);
+            playerGuiUtilsMap.put(p, playerGuiUtils);
+            return playerGuiUtils;
+        } else {
+            return playerGuiUtilsMap.get(p);
         }
     }
+
+
 
     public Connection getConnection() {
         return connection;
     }
 
-    private void setConnection(Connection connection) {
+    public void setConnection(Connection connection) {
         this.connection = connection;
     }
 }

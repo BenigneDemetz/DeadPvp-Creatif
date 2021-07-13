@@ -10,24 +10,21 @@ import org.bukkit.entity.Player;
 
 public class getName implements CommandExecutor {
     @Override
-    public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
+    public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args) {
 
         if (commandSender.hasPermission("deadpvp.constructeur")) {
-            if (!(commandSender instanceof Player)) return false;
+            if (!(commandSender instanceof Player)) return true;
 
             Player p = (Player) commandSender;
 
-            if (strings.length >= 1) {
+            if (args.length == 1) {
                 String name = "";
-                try {
-                    for (Player target : Bukkit.getOnlinePlayers()) {
-                        if (target.getDisplayName().contains(strings[0])) p.sendMessage("§aLe pseudo du joueur ciblé est §d" + target.getName());
-                    }
+                Player target = Bukkit.getPlayer(args[0]);
+                if(target == null){
+                    p.sendMessage("&cJoueur introuvable");
+                    return true;
                 }
-                catch (Exception e) {
-                    p.sendMessage("§cLe joueur n'est pas connecté");
-                }
-
+                p.sendMessage("Le nom du joueur est : " + target.getDisplayName());
 
             } else return false;
         }

@@ -10,16 +10,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class tpa implements CommandExecutor {
+
     public static Map<Player, Player> tpa = new HashMap<Player, Player>();
-    Map<Player, Long> cooldowns2 = new HashMap<Player, Long>();
+    Map<Player, Long> cooldowns2 = new HashMap<>();
+
     @Override
     public boolean onCommand(CommandSender commandSender, Command command,String s, String[] args) {
         if(commandSender instanceof Player){
             if(args.length == 0){
                 commandSender.sendMessage("§cErreur: /tpa <Player>");
-                return false;
+                return true;
             }
-            Player tpto = Bukkit.getPlayer(args[0]);
+
+            Player target = Bukkit.getPlayer(args[0]);
             Player p = (Player) commandSender;
 
             if(cooldowns2.containsKey(p)) {
@@ -28,25 +31,23 @@ public class tpa implements CommandExecutor {
                     p.sendMessage("§cErreur: vous devez attendre "+timeleft+" secondes !");
                     return true;
                 }
-
             }
 
             cooldowns2.put(p, System.currentTimeMillis()+(5*1000));
 
-
-            if(tpto == null){
+            if(target == null){
                 p.sendMessage("§cErreur: joueur introuvable !");
-                return false;
+                return true;
             }
-            if(tpto.getName() == p.getName()){
+            if(target.getName() == p.getName()){
                 p.sendMessage("§cErreur: impossible de te téléporter à toi même !");
-                return false;
+                return true;
             }
-            tpa.put(tpto,p);
-            p.sendMessage("§5§lTéléportation>>> §6Demande §6de §6téléportation §6à §b"+tpto.getName()+" §6envoyé§6!");
-            tpto.sendMessage("§5§lTéléportation>>> §b"+p.getName()+" §6veut §6se §6téléporter §6à §6vous ! \n§5§lTéléportation>>> §6Faites §6/tpyes §6pour §6accepter §6et §6/tpno §6pour §6refuser §6!");
+            tpa.put(target,p);
+            p.sendMessage("§5§lTéléportation>>> §6Demande §6de §6téléportation §6à §b"+target.getName()+" §6envoyé§6!");
+            target.sendMessage("§5§lTéléportation>>> §b"+p.getName()+" §6veut §6se §6téléporter §6à §6vous ! \n§5§lTéléportation>>> §6Faites §6/tpyes §6pour §6accepter §6et §6/tpno §6pour §6refuser §6!");
 
         }
-        return false;
+        return true;
     }
 }

@@ -1,6 +1,7 @@
 package net.deadpvp.commands;
 
 import net.deadpvp.events.EventListener;
+import net.deadpvp.scoreboard.ScoreboardManager;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -22,7 +23,7 @@ public class LivreBeta implements CommandExecutor {
 
         if(commandSender instanceof Player){
             Player p = (Player) commandSender;
-            EventListener.setScoreBoard(p);
+            ScoreboardManager.setScoreBoard(p);
         }
 
         ((Player) commandSender).getInventory().setItem(8, book);

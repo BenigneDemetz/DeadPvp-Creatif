@@ -1,13 +1,45 @@
 package net.deadpvp.utils;
 
 import net.deadpvp.Main;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class sqlUtilities {
+
+    public static String host, database, username, password;
+    public static int port;
+
+    public static void mysqlSetup(){
+        host = "localhost";
+        port = 3306;
+        database = "minecraftrebased";
+        username = "root";
+        password = "";
+
+        try {
+
+            synchronized (Main.getInstance().getServer()) {
+                if (Main.getInstance().getConnection() != null && !Main.getInstance().getConnection().isClosed()) {
+                    return;
+                }
+
+                Class.forName("com.mysql.jdbc.Driver");
+                Main.getInstance().setConnection(DriverManager.getConnection("jdbc:mysql://" + host + ":"
+                        + port + "/" + database, username, password));
+
+                Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "MYSQL CONNECTED");
+            }
+        }
+        catch(SQLException e){
+            Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_RED + "MYSQL NOT CONNECTED #2");
+            e.printStackTrace();
+        }catch(ClassNotFoundException e){
+            e.printStackTrace();
+            Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_RED + "MYSQL NOT CONNECTED #3");
+        }
+    }
 
     public static boolean hasData(String table, String nameColumn, String playerSearched)  {
         try {
@@ -70,5 +102,6 @@ public class sqlUtilities {
         modifyStats.execute();
         modifyStats.close();
     }
+
 
 }

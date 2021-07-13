@@ -12,10 +12,11 @@ public class tpno implements CommandExecutor {
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args) {
         if(commandSender instanceof Player){
             Player p = (Player) commandSender;
+
             if(tpa.tpa.containsKey(p)){
                 Player tphere = tpa.tpa.get(p);
                 tphere.sendMessage("§5§lTéléportation>>> §cTéléportation refusée !");
-                commandSender.sendMessage("§5§lTéléportation>>> §cTéléportation refusée !");
+                p.sendMessage("§5§lTéléportation>>> §cTéléportation refusée !");
                 tphere.playSound(tphere.getLocation(), Sound.ENTITY_VILLAGER_NO,10,1);
                 p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO,10,2);
                 tpa.tpa.remove(p);
