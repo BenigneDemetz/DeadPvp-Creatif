@@ -32,8 +32,6 @@ public class ChatListeners implements Listener {
         String msg = e.getMessage();
         String temp;
         int maj = 0;
-        char x = 0;
-        int max;
         Player p = e.getPlayer();
         if (msg.equals("[event cancelled by LiteBans")) return;
 
@@ -45,8 +43,7 @@ public class ChatListeners implements Listener {
                 maj++;
             }
         }
-        max = (maj * 100) / e.getMessage().length();
-        if(max >= 30){
+        if(!p.hasPermission("chat.admin") && maj >= 5){
             msg = msg.toLowerCase(); //Methode toLowerCase, plus simple que de loop une nouvelle fois a travers chaque caractere pour les remmetre en minuscule
         }
 
