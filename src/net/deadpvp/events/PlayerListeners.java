@@ -7,6 +7,7 @@ import net.deadpvp.utils.AdminInv;
 import net.deadpvp.utils.ChatUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -30,8 +31,8 @@ public class PlayerListeners implements Listener {
             }
         }
 
-        //Location spawn = new Location(Bukkit.getServer().getWorld("Creatif"), 0.5, 65.1, 80.5, 0, 0);
-        //p.teleport(spawn);
+        Location spawn = new Location(Bukkit.getServer().getWorld("Creatif"), 0.5, 65.1, 80.5, 0, 0);
+        p.teleport(spawn);
         p.setPlayerListName(ChatUtils.getPrefix(p) + p.getDisplayName());
         e.setJoinMessage("§a[§4+§a] " + ChatUtils.getPrefix(p) + e.getPlayer().getDisplayName());
         e.getPlayer().setGameMode(GameMode.CREATIVE);

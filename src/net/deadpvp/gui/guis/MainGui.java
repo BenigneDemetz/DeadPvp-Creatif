@@ -35,12 +35,12 @@ public class MainGui extends GuiManager {
 
             case OAK_DOOR:
                 p.closeInventory();
-                p.performCommand("/plot home");
+                p.performCommand("plot home");
                 break;
             case NETHER_STAR:
                 p.performCommand("gadgetsmenu menu main");
                 break;
-            case GRASS:
+            case GRASS_BLOCK:
                 p.closeInventory();
                 p.performCommand("spawn");
                 break;
