@@ -16,7 +16,7 @@ public class Tpa implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command,String s, String[] args) {
-        if (commandSender instanceof Player) return true;
+        if (!(commandSender instanceof Player)) return true;
 
         if (args.length == 0)  return false;
 
