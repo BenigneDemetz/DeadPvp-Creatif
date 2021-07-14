@@ -8,6 +8,10 @@ import org.bukkit.inventory.InventoryHolder;
 
 public abstract class GuiManager implements InventoryHolder {
 
+    /*
+    * TODO: plot gui, plot flag gui
+    * */
+
     protected Inventory inv;
     protected PlayerGuiUtils playerGuiUtils;
 

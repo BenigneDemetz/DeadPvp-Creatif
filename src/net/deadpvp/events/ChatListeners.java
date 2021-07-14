@@ -32,7 +32,7 @@ public class ChatListeners extends ChatUtils implements Listener {
         /*ANTI LINK*/
         if(containLink(msg) && !p.hasPermission("chat.builer")){
             e.setCancelled(true);
-            p.sendMessage("&cVous ne pouvez pas mettre de lien dans le chat");
+            p.sendMessage("§cVous ne pouvez pas mettre de lien dans le chat");
         }
 
 
@@ -81,6 +81,7 @@ public class ChatListeners extends ChatUtils implements Listener {
         /* Bienvenue */
         if(canSayWelcome(p) && e.getMessage().toLowerCase().contains("bienvenue")){
             addKarmaAndList(p);
+            if(p.hasPermission("chat.apprenti")) msg = colorBienvenue(msg);
         }
 
         /*MENTION*/

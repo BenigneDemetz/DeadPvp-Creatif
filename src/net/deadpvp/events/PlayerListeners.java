@@ -30,6 +30,10 @@ public class PlayerListeners implements Listener {
         return book;
     }
 
+    /*
+    * TODO: opti classe
+    * */
+
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();

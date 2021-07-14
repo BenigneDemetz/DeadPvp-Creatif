@@ -8,6 +8,10 @@ import java.sql.*;
 
 public class sqlUtilities {
 
+    /*
+    * TODO: opti classe
+    * */
+
     public static String host, database, username, password;
     public static int port;
 

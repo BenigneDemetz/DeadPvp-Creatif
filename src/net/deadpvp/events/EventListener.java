@@ -1,6 +1,5 @@
 package net.deadpvp.events;
 
-
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -13,6 +12,7 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.event.world.PortalCreateEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 
 import java.util.HashMap;
@@ -69,27 +69,31 @@ public class EventListener implements Listener {
     @EventHandler
     public void onDropItem (PlayerDropItemEvent e) {
         Player p = e.getPlayer();
-        e.getItemDrop();
-        if (e.getItemDrop().getItemStack().getType().equals(Material.WRITTEN_BOOK)) {
-            BookMeta meta = (BookMeta) e.getItemDrop().getItemStack().getItemMeta();
-            if (meta.getTitle().contains("§dCarnet de commandes") && meta.getAuthor().equals("§4§lDEAD§9§lPVP")) {
-                e.setCancelled(true);
-            }
+        if (isCommandBook(e.getItemDrop().getItemStack())) {
+            e.setCancelled(true);
         }
+        e.getItemDrop();
+
     }
 
     @EventHandler
     public void onItemSpawn (ItemSpawnEvent e) {
-        if (e.getEntity().getItemStack().getType().equals(Material.WRITTEN_BOOK)) {
-            BookMeta meta = (BookMeta) e.getEntity().getItemStack().getItemMeta();
-            if (meta.getTitle().contains("§dCarnet de commandes") && meta.getAuthor().equals("§4§lDEAD§9§lPVP")) {
-                e.setCancelled(true);
-            }
-        }
+         if (isCommandBook(e.getEntity().getItemStack())) {
+             e.setCancelled(true);
+         }
     }
 
     @EventHandler
     private void onWeatherChange (WeatherChangeEvent e) {
         e.setCancelled(true);
     }
+
+    private boolean isCommandBook(ItemStack itemStack) {
+        if (itemStack.equals(Material.WRITTEN_BOOK)) {
+            BookMeta meta = (BookMeta) itemStack.getItemMeta();
+            return meta.getTitle().contains("§dCarnet de commandes") && meta.getAuthor().equals("§4§lDEAD§9§lPVP");
+        }
+        return false;
+    }
+
 }
