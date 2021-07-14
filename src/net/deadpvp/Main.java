@@ -51,11 +51,13 @@ public class Main extends JavaPlugin implements PluginMessageListener {
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         this.getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", this);
         this.getServer().getMessenger().registerIncomingPluginChannel(this, "deadpvp:return", this);
+
         PluginManager pm = Bukkit.getServer ().getPluginManager ();
         pm.registerEvents(new EventListener(), this);
         pm.registerEvents(new InventoryListeners(), this);
         pm.registerEvents(new ChatListeners(), this);
         pm.registerEvents(new PlayerListeners(), this);
+
         getCommand ("hub").setExecutor (new hub (this));
         getCommand ("speed").setExecutor (new Speed());
         getCommand ("spawn").setExecutor (new Spawn());
@@ -67,6 +69,8 @@ public class Main extends JavaPlugin implements PluginMessageListener {
         getCommand ("nick").setExecutor (new Nick());
         getCommand ("freeze").setExecutor (new freeze());
         getCommand ("getname").setExecutor (new getName());
+
+        ChatUtils.registerBlockedCommands();
 
         ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(Main.getInstance(), PacketType.Play.Server.PLAYER_INFO) {
 

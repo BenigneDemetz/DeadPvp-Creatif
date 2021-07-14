@@ -1,12 +1,10 @@
 package net.deadpvp.gui;
 
 import org.bukkit.Bukkit;
-import org.bukkit.DyeColor;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 
-import java.io.IOException;
 
 public abstract class GuiManager implements InventoryHolder {
 
