@@ -1,7 +1,7 @@
 name: DeadPvp
 main: net.deadpvp.Main
-description: "Le plugin creatif (nul) de dp (encore + nul)"
-author: "les gros nul de dev de DP"
+description: "Plugin crea de DeadPvP"
+authors: ["Benigne", "Red_Spash", "Arnaud013"]
 version: 1.0
 api-version: 1.16
 depend:
@@ -18,7 +18,7 @@ commands:
   vanish:
     permission: chat.builder
   tpa:
-    usage: "/tpa <Player>"
+    usage: "§c/tpa <Player>"
   tpyes:
     aliases: tpaccept
   tpno:

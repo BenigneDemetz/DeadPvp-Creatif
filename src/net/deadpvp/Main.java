@@ -9,7 +9,6 @@ import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
-import io.netty.util.collection.CharObjectMap;
 import net.deadpvp.commands.*;
 import net.deadpvp.events.ChatListeners;
 import net.deadpvp.events.EventListener;
@@ -37,7 +36,6 @@ public class Main extends JavaPlugin implements PluginMessageListener {
     private Connection connection;
 
     public static ArrayList<Player> freeze = new ArrayList<> ();
-    public ArrayList<Player> vanishedPlayers = new ArrayList<Player>();
     public ArrayList<Player> staffModePlayers = new ArrayList<Player>();
     public HashMap<Player, AdminInv> adminPlayerHashmap = new HashMap<>();
     public HashMap<String, String> nickname = new HashMap<>();
@@ -51,57 +49,27 @@ public class Main extends JavaPlugin implements PluginMessageListener {
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         this.getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", this);
         this.getServer().getMessenger().registerIncomingPluginChannel(this, "deadpvp:return", this);
-        PluginManager pm = Bukkit.getServer ().getPluginManager ();
-        pm.registerEvents(new EventListener(), this);
-        pm.registerEvents(new InventoryListeners(), this);
-        pm.registerEvents(new ChatListeners(), this);
-        pm.registerEvents(new PlayerListeners(), this);
-        getCommand ("hub").setExecutor (new hub (this));
-        getCommand ("speed").setExecutor (new Speed());
-        getCommand ("spawn").setExecutor (new Spawn());
-        getCommand ("livrebeta").setExecutor (new LivreBeta());
-        getCommand("Vanish").setExecutor(new Vanich());
-        getCommand("tpa").setExecutor(new tpa());
-        getCommand("tpyes").setExecutor(new tpyes());
-        getCommand("tpno").setExecutor(new tpno());
-        getCommand ("nick").setExecutor (new Nick());
-        getCommand ("freeze").setExecutor (new freeze());
-        getCommand ("getname").setExecutor (new getName());
 
-        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(Main.getInstance(), PacketType.Play.Server.PLAYER_INFO) {
-
-            @Override
-            public void onPacketSending(PacketEvent event) {
-                if (event.getPacket().getPlayerInfoAction().read(0) != EnumWrappers.PlayerInfoAction.ADD_PLAYER) return;
-                List<PlayerInfoData> newPlayerInfoDataList = new ArrayList<PlayerInfoData>();
-                List<PlayerInfoData> playerInfoDataList = event.getPacket().getPlayerInfoDataLists().read(0);
-                for (PlayerInfoData playerInfoData : playerInfoDataList) {
-                    if (playerInfoData == null || playerInfoData.getProfile() == null || Bukkit.getPlayer(playerInfoData.getProfile().getUUID()) == null) { //Unknown Player
-                        newPlayerInfoDataList.add(playerInfoData);
-                        continue;
-                    }
-                    WrappedGameProfile profile = playerInfoData.getProfile();
-                    profile = profile.withName(profile.getName());
-
-
-                    if (nickname.containsKey(profile.getName())) profile =
-                            profile.withName(Nick.getColor(Bukkit.getPlayer(profile.getName())) + nickname.get(profile.getName()));
-                    PlayerInfoData newPlayerInfoData = new PlayerInfoData(profile, playerInfoData.getPing(), playerInfoData.getGameMode(), playerInfoData.getDisplayName());
-
-
-
-                    newPlayerInfoDataList.add(newPlayerInfoData);
-//                    if (nickname.containsKey(profile.getName()))
-//                        Bukkit.getPlayer(profile.getName()).setPlayerListName(EventListener.getPrefixColor(Bukkit.getPlayer(profile.getName()))+ nickname.get(profile.getName()));
-
-                }
-                event.getPacket().getPlayerInfoDataLists().write(0, newPlayerInfoDataList);
-            }
-        });
+        registerCommands();
+        registerEvents();
+        registerProtocolLib();
+        ChatUtils.registerBlockedCommands();
 
         super.onEnable ();
     }
-    
+
+    public static Main getInstance() {
+        return instance;
+    }
+
+    public Connection getConnection() {
+        return connection;
+    }
+
+    public void setConnection(Connection connection) {
+        this.connection = connection;
+    }
+
     @Override
     public void onDisable() {
         this.getServer().getMessenger().unregisterOutgoingPluginChannel(this, "BungeeCord");
@@ -110,11 +78,40 @@ public class Main extends JavaPlugin implements PluginMessageListener {
 
         super.onDisable ();
     }
-    
-    public static Main getInstance() {
-        return instance;
+
+    public void registerEvents(){
+        PluginManager pm = Bukkit.getServer ().getPluginManager ();
+        pm.registerEvents(new EventListener(), this);
+        pm.registerEvents(new InventoryListeners(), this);
+        pm.registerEvents(new ChatListeners(), this);
+        pm.registerEvents(new PlayerListeners(), this);
     }
-    
+
+    public void registerCommands(){
+        getCommand ("hub").setExecutor (new hub (this));
+        getCommand ("speed").setExecutor (new Speed());
+        getCommand ("spawn").setExecutor (new Spawn());
+        getCommand ("livrebeta").setExecutor (new LivreBeta());
+        getCommand("Vanish").setExecutor(new Vanich());
+        getCommand("tpa").setExecutor(new Tpa());
+        getCommand("tpyes").setExecutor(new Tpyes());
+        getCommand("tpno").setExecutor(new Tpno());
+        getCommand ("nick").setExecutor (new Nick());
+        getCommand ("freeze").setExecutor (new freeze());
+        getCommand ("getname").setExecutor (new getName());
+    }
+
+    public static PlayerGuiUtils getPlayerGuiUtils(Player p){
+        PlayerGuiUtils playerGuiUtils;
+        if(!playerGuiUtilsMap.containsKey(p)){
+            playerGuiUtils = new PlayerGuiUtils(p);
+            playerGuiUtilsMap.put(p, playerGuiUtils);
+            return playerGuiUtils;
+        } else {
+            return playerGuiUtilsMap.get(p);
+        }
+    }
+
     @Override
     public void onPluginMessageReceived (String s, Player player, byte[] bytes) {
         ByteArrayDataInput in = ByteStreams.newDataInput(bytes);
@@ -134,24 +131,34 @@ public class Main extends JavaPlugin implements PluginMessageListener {
         }
     }
 
-    public static PlayerGuiUtils getPlayerGuiUtils(Player p){
-        PlayerGuiUtils playerGuiUtils;
-        if(!playerGuiUtilsMap.containsKey(p)){
-            playerGuiUtils = new PlayerGuiUtils(p);
-            playerGuiUtilsMap.put(p, playerGuiUtils);
-            return playerGuiUtils;
-        } else {
-            return playerGuiUtilsMap.get(p);
-        }
-    }
 
+    public void registerProtocolLib(){
+        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(Main.getInstance(), PacketType.Play.Server.PLAYER_INFO) {
 
+            @Override
+            public void onPacketSending(PacketEvent event) {
+                if (event.getPacket().getPlayerInfoAction().read(0) != EnumWrappers.PlayerInfoAction.ADD_PLAYER) return;
+                List<PlayerInfoData> newPlayerInfoDataList = new ArrayList<PlayerInfoData>();
+                List<PlayerInfoData> playerInfoDataList = event.getPacket().getPlayerInfoDataLists().read(0);
+                for (PlayerInfoData playerInfoData : playerInfoDataList) {
+                    if (playerInfoData == null || playerInfoData.getProfile() == null || Bukkit.getPlayer(playerInfoData.getProfile().getUUID()) == null) { //Unknown Player
+                        newPlayerInfoDataList.add(playerInfoData);
+                        continue;
+                    }
+                    WrappedGameProfile profile = playerInfoData.getProfile();
+                    profile = profile.withName(profile.getName());
 
-    public Connection getConnection() {
-        return connection;
-    }
+                    if (nickname.containsKey(profile.getName())) profile =
+                            profile.withName(ChatUtils.getPrefixColor(Bukkit.getPlayer(profile.getName())) + nickname.get(profile.getName()));
+                    PlayerInfoData newPlayerInfoData = new PlayerInfoData(profile, playerInfoData.getPing(), playerInfoData.getGameMode(), playerInfoData.getDisplayName());
 
-    public void setConnection(Connection connection) {
-        this.connection = connection;
+                    newPlayerInfoDataList.add(newPlayerInfoData);
+//                    if (nickname.containsKey(profile.getName()))
+//                        Bukkit.getPlayer(profile.getName()).setPlayerListName(EventListener.getPrefixColor(Bukkit.getPlayer(profile.getName()))+ nickname.get(profile.getName()));
+
+                }
+                event.getPacket().getPlayerInfoDataLists().write(0, newPlayerInfoDataList);
+            }
+        });
     }
 }

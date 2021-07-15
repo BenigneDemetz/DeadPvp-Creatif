@@ -21,9 +21,23 @@ import java.util.Objects;
 
 public class PlayerListeners implements Listener {
 
+    public static ItemStack book(){
+        ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
+        BookMeta meta = (BookMeta) book.getItemMeta();
+        meta.setAuthor("§4§lDEAD§9§lPVP");
+        meta.setTitle("§dCarnet de commandes");
+        book.setItemMeta(meta);
+        return book;
+    }
+
+    /*
+    * TODO: opti classe
+    * */
+
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
+        p.getInventory().setItem(8, book());
 
         if (!p.hasPermission("deadpvp.vanich")) {
             for (Player playervanished : Vanich.inVanish) {
@@ -34,23 +48,14 @@ public class PlayerListeners implements Listener {
         Location spawn = new Location(Bukkit.getServer().getWorld("Creatif"), 0.5, 65.1, 80.5, 0, 0);
         p.teleport(spawn);
         p.setPlayerListName(ChatUtils.getPrefix(p) + p.getDisplayName());
+
         e.setJoinMessage("§a[§4+§a] " + ChatUtils.getPrefix(p) + e.getPlayer().getDisplayName());
         e.getPlayer().setGameMode(GameMode.CREATIVE);
-
-        ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
-        BookMeta meta = (BookMeta) book.getItemMeta();
-        meta.setAuthor("§4§lDEAD§9§lPVP");
-        meta.setTitle("§dCarnet de commandes");
-        book.setItemMeta(meta);
-
-        p.getInventory().setItem(8, book);
 
         if (!p.hasPlayedBefore()) {
             Bukkit.broadcastMessage("§7Souhaitez la bienvenue à §6" + p.getName() + "§7 pour reçevoir une récompense !");
             ChatListeners.bienvenue = true;
-            for (Player pls : Bukkit.getOnlinePlayers()) {
-                ChatListeners.saybienvenue.put(pls, false);
-            }
+            ChatListeners.hasSaidBienvenue.clear();
             p.sendMessage("§6Bienvenue sur le créatif de §4§lDEAD§1§lPVP §6!\n§6Pour créer un plot faites la commande /plot auto ou /plot claim sur un plot qui est vide.\nEn cas de problème contactez le staff sur §9discord: discord.gg/23kPxkbzDg");
             new BukkitRunnable() {
                 @Override

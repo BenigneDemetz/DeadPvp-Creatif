@@ -12,7 +12,11 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.TimeZone;
 
-public class ScoreboardManager {
+public class ScoreboardManager{
+
+    /*
+    * TODO: opti classe
+    * */
 
     public static void setScoreBoard(Player player) {
         TimeZone tz = TimeZone.getTimeZone("Europe/Paris");

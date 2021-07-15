@@ -42,7 +42,7 @@ public class Nick implements CommandExecutor, TabCompleter {
                 return true;
             }
             p.setPlayerListName(ChatUtils.getPrefix(p) + name);
-            p.setDisplayName(getColor(p) + name);
+            p.setDisplayName(ChatUtils.getPrefixColor(p) + name);
             p.setCustomName(p.getName());
 
             p.sendMessage("§aTon pseudo est maintenant §d" + name);
@@ -55,23 +55,6 @@ public class Nick implements CommandExecutor, TabCompleter {
 
         return true;
     }
-
-    public static ChatColor getColor (Player p) {
-        if (p.getName().equals("Red_Spash")) return ChatColor.RED;
-        if (p.getName().equals("Arnaud013")) return ChatColor.RED;
-        if (p.hasPermission("chat.admin")) return ChatColor.DARK_RED;
-        if (p.hasPermission("chat.dev")) return ChatColor.RED;
-        if (p.hasPermission("chat.modo")) return ChatColor.GOLD;
-        if (p.hasPermission("chat.builder")) return ChatColor.BLUE;
-        if (p.hasPermission("chat.vip")) return ChatColor.AQUA;
-        if (p.hasPermission("deadpvp.architecte")) return ChatColor.AQUA;
-        if (p.hasPermission("deadpvp.constructeur")) return ChatColor.DARK_AQUA;
-        if (p.hasPermission("deadpvp.apprenti")) return ChatColor.GREEN;
-
-
-        else return ChatColor.GRAY;
-    }
-
 
     @Override
     public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
