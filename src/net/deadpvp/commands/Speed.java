@@ -26,17 +26,15 @@ public class Speed implements CommandExecutor {
                         }
                         if (Float.parseFloat(args[0]) > 10) return false;
 
-                        else if (p.hasPermission("deadpvp.architecte"));
+                        else if (p.hasPermission("deadpvp.architecte")) ;
 
                         else if (p.hasPermission("deadpvp.constructeur")) {
-                            if (Float.parseFloat(args[0]) > 6) {
-                                p.sendMessage("§cTu ne peux pas dépasser la vitesse de 6");
+                            if (Float.parseFloat(args[0]) > 7) {
+                                p.sendMessage("§cTu ne peux pas dépasser la vitesse de 7");
                                 return true;
                             }
-                        }
-
-                        else if (p.hasPermission("deadpvp.apprenti")) {
-                            if (Float.parseFloat(args[0]) > 4 ) {
+                        } else if (p.hasPermission("deadpvp.apprenti")) {
+                            if (Float.parseFloat(args[0]) > 4) {
                                 p.sendMessage("§cTu ne peux pas dépasser la vitesse de 4");
                                 return true;
                             }
@@ -49,42 +47,12 @@ public class Speed implements CommandExecutor {
                             p.sendMessage("§bSpeed au sol : §6" + walkSpeed + " -> " + args[0]);
                         }
                     }
-                    catch (NumberFormatException  e)
+                    catch (Exception ee)
                     {
-                        System.out.println(e);
-                        try {
-                            if (Float.parseFloat(args[0]) > 10) return false;
-
-                            else if (p.hasPermission("deadpvp.architecte"));
-
-                            else if (p.hasPermission("deadpvp.constructeur")) {
-                                if (Float.parseFloat(args[0]) > 6) {
-                                    p.sendMessage("§cTu ne peux pas dépasser la vitesse de 6");
-                                    return true;
-                                }
-                            }
-
-                            else if (p.hasPermission("deadpvp.apprenti")) {
-                                if (Float.parseFloat(args[0]) > 4 ) {
-                                    p.sendMessage("§cTu ne peux pas dépasser la vitesse de 4");
-                                    return true;
-                                }
-                            }
-                            if (p.isFlying()) {
-                                p.setFlySpeed(Float.parseFloat(args[0]) / 10);
-                                p.sendMessage("§bSpeed en vol : §6 " + flySpeed + " -> " + args[0]);
-                            } else if (p.isOnGround()) {
-                                p.setWalkSpeed(Float.parseFloat(args[0]) / 10);
-                                p.sendMessage("§bSpeed au sol : §6" + walkSpeed + " -> " + args[0]);
-                            }
-                        }
-                        catch (Exception ee)
-                        {
-                            System.out.println(ee);
-                            return false;
-                        }
+                        System.out.println(ee);
+                        return false;
                     }
-                    return true;
+                    return false;
                 }
                 else {
                     p.sendMessage("§bTu vol en vitesse : §6" + flySpeed +
