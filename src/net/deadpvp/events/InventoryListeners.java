@@ -21,6 +21,8 @@ public class InventoryListeners implements Listener {
 
     @EventHandler
     public void onInteractInventory (InventoryClickEvent e) {
+        System.out.println(e.getClickedInventory());
+
         Player p = (Player) e.getWhoClicked();
         if (e.getClickedInventory() == null) return;
         if(e.getCurrentItem() == null) return;
@@ -32,6 +34,7 @@ public class InventoryListeners implements Listener {
                 new MainGui(Main.getPlayerGuiUtils(p)).openInv();
             }
         }
+//        if (e.getCurrentItem().getType().equals(Material.PAPER) && e.getView().)
 
         InventoryHolder holder = e.getClickedInventory().getHolder();
         if(holder instanceof GuiManager){

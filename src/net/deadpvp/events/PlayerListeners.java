@@ -76,6 +76,10 @@ public class PlayerListeners implements Listener {
     }
 
     @EventHandler
+    public void armorstand(PlayerInteractAtEntityEvent e) {
+    }
+
+    @EventHandler
     public void onInteract(PlayerInteractEvent e) {
         Player p = e.getPlayer();
         if (e.getItem() != null) {
