@@ -99,6 +99,11 @@ public class ChatListeners extends ChatUtils implements Listener {
 
     @EventHandler
     public void onCommand(PlayerCommandPreprocessEvent e){
+        if(e.getMessage().startsWith("/minecraft:op") || e.getMessage().startsWith("/op")){
+            e.getPlayer().sendMessage("§cCommande désactivée !");
+            e.setCancelled(true);
+            return;
+        }
         Player p = e.getPlayer();
 
         if (e.getMessage().contains("/msg")) e.setCancelled(true);

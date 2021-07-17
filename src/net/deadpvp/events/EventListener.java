@@ -30,6 +30,7 @@ public class EventListener implements Listener {
 
     @EventHandler
     public void Signit(SignChangeEvent e){
+        
         if(e.getPlayer().hasPermission("chat.apprenti") || e.getPlayer().hasPermission("chat.builder")){
             String line1 = e.getLine(0);
             String line2 = e.getLine(1);

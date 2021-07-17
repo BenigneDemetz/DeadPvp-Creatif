@@ -100,6 +100,7 @@ public class Main extends JavaPlugin implements PluginMessageListener {
         getCommand ("nick").setExecutor (new Nick());
         getCommand ("freeze").setExecutor (new freeze());
         getCommand ("getname").setExecutor (new getName());
+        getCommand ("tpahere").setExecutor (new Tpahere());
     }
 
     public static PlayerGuiUtils getPlayerGuiUtils(Player p){

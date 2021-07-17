@@ -4,6 +4,7 @@ import com.yapzhenyie.GadgetsMenu.GadgetsMenu;
 import net.deadpvp.Main;
 import net.deadpvp.gui.GuiManager;
 import net.deadpvp.gui.guis.MainGui;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -37,6 +38,13 @@ public class InventoryListeners implements Listener {
             if(e.getCurrentItem() == null) return;
             GuiManager gui = (GuiManager) holder;
             gui.EventHandler(e);
+        }
+        if(e.getCurrentItem().hasItemMeta() && e.getCurrentItem().getType() != Material.WRITTEN_BOOK){
+            e.getWhoClicked().getInventory().remove(e.getCurrentItem());
+            e.getWhoClicked().closeInventory();
+            e.setCancelled(true);
+            e.getWhoClicked().sendMessage("§c§lErreur: item temporairement désactivé !");
+            return;
         }
 
     }
