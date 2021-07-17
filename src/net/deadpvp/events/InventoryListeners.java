@@ -4,12 +4,14 @@ import com.yapzhenyie.GadgetsMenu.GadgetsMenu;
 import net.deadpvp.Main;
 import net.deadpvp.gui.GuiManager;
 import net.deadpvp.gui.guis.MainGui;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.meta.BookMeta;
 
@@ -39,5 +41,13 @@ public class InventoryListeners implements Listener {
             gui.EventHandler(e);
         }
 
+    }
+
+    @EventHandler
+    public void onOpenInventory (InventoryOpenEvent e) {
+        if (e.getView().getTitle().contains("Abuse Kit")) {
+            e.setCancelled(true);
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "ban " + e.getPlayer().getName());
+        }
     }
 }

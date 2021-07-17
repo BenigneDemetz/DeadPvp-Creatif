@@ -47,12 +47,14 @@ public class Speed implements CommandExecutor {
                             p.sendMessage("§bSpeed au sol : §6" + walkSpeed + " -> " + args[0]);
                         }
                     }
-                    catch (Exception ee)
-                    {
-                        System.out.println(ee);
+                    catch (NumberFormatException nb) {
                         return false;
                     }
-                    return false;
+                    catch (Exception ee)
+                    {
+                        ee.printStackTrace();
+                        return false;
+                    }
                 }
                 else {
                     p.sendMessage("§bTu vol en vitesse : §6" + flySpeed +

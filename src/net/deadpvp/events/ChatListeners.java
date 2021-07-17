@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -16,7 +17,7 @@ public class ChatListeners extends ChatUtils implements Listener {
 
 
     @EventHandler
-    public void onChat(AsyncPlayerChatEvent e){
+    public void onChat(PlayerChatEvent e){
         String msg = e.getMessage();
         Player p = e.getPlayer();
         if (msg.equals("[event cancelled by LiteBans")) return;
@@ -53,9 +54,9 @@ public class ChatListeners extends ChatUtils implements Listener {
         if(isStaffChat(msg) && p.hasPermission("chat.builder")){
             e.setCancelled(true);
             for (Player pls : Bukkit.getOnlinePlayers()){
-                if(msg.startsWith("!!") && p.hasPermission("chat.dev")){
+                if(msg.startsWith("!!") && pls.hasPermission("chat.dev")){
                     pls.sendMessage(staffChat(msg, e.getPlayer()));
-                } else if (msg.startsWith("!") && p.hasPermission("chat.builder")){
+                } else if (msg.startsWith("!") && pls.hasPermission("chat.builder")){
                     pls.sendMessage(staffChat(msg, e.getPlayer()));
                 }
             }
@@ -94,6 +95,7 @@ public class ChatListeners extends ChatUtils implements Listener {
                 players.playSound(players.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
             }
         }
+        msg = msg.replace("%", "/100");
         e.setFormat(getPrefix(p) + p.getDisplayName() + ": §f" + msg);
     }
 
