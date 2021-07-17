@@ -102,6 +102,8 @@ public class ChatUtils {
         blockedCommands.add("/bukkit");
         blockedCommands.add("/?");
         blockedCommands.add("/help");
+        blockedCommands.add("/zpermissions");
+        blockedCommands.add("/perm");
     }
 
     public static String getPrefix(Player p) {

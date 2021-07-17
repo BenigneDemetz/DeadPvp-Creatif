@@ -3,6 +3,7 @@ package net.deadpvp.events;
 import net.deadpvp.Main;
 import net.deadpvp.commands.Vanich;
 import net.deadpvp.gui.guis.MainGui;
+import net.deadpvp.scoreboard.ScoreboardManager;
 import net.deadpvp.utils.AdminInv;
 import net.deadpvp.utils.ChatUtils;
 import org.bukkit.Bukkit;
@@ -37,6 +38,7 @@ public class PlayerListeners implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
+        ScoreboardManager.setScoreBoard(p);
         p.getInventory().setItem(8, book());
 
         if (!p.hasPermission("deadpvp.vanich")) {

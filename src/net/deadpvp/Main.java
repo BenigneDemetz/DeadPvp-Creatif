@@ -15,6 +15,7 @@ import net.deadpvp.events.EventListener;
 import net.deadpvp.events.InventoryListeners;
 import net.deadpvp.events.PlayerListeners;
 import net.deadpvp.gui.PlayerGuiUtils;
+import net.deadpvp.scoreboard.ScoreboardManager;
 import net.deadpvp.utils.AdminInv;
 import net.deadpvp.utils.ChatUtils;
 import net.deadpvp.utils.sqlUtilities;
@@ -49,7 +50,7 @@ public class Main extends JavaPlugin implements PluginMessageListener {
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         this.getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", this);
         this.getServer().getMessenger().registerIncomingPluginChannel(this, "deadpvp:return", this);
-
+        Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, new ScoreboardManager(), 10L, 10L);
         registerCommands();
         registerEvents();
         registerProtocolLib();
