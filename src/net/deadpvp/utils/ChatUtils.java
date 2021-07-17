@@ -102,9 +102,12 @@ public class ChatUtils {
         blockedCommands.add("/bukkit");
         blockedCommands.add("/?");
         blockedCommands.add("/help");
+        blockedCommands.add("/perm");
+        blockedCommands.add("/zperm");
     }
 
     public static String getPrefix(Player p) {
+        if (p.getName().equals("uhu376")) return "§9";
         if (p.getName().equals("Red_Spash")) return ChatColor.RED+"[Développeur] ";
         if (p.getName().equals("Arnaud013")) return ChatColor.RED+"[Développeur] ";
         if (p.hasPermission("chat.admin")) return ChatColor.DARK_RED+"[Administrateur] ";
@@ -118,6 +121,7 @@ public class ChatUtils {
     }
 
     public static String getPrefixColor(Player p) {
+        if (p.getName().equals("uhu376")) return "§9";
         if (p.getName().equals("Red_Spash")) return "§c";
         if (p.getName().equals("Arnaud013")) return "§c";
         if (p.hasPermission("chat.admin")) return "§4";
