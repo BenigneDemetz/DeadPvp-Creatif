@@ -53,9 +53,9 @@ public class ChatListeners extends ChatUtils implements Listener {
         if(isStaffChat(msg) && p.hasPermission("chat.builder")){
             e.setCancelled(true);
             for (Player pls : Bukkit.getOnlinePlayers()){
-                if(msg.startsWith("!!") && p.hasPermission("chat.dev")){
+                if(msg.startsWith("!!") && pls.hasPermission("chat.dev")){
                     pls.sendMessage(staffChat(msg, e.getPlayer()));
-                } else if (msg.startsWith("!") && p.hasPermission("chat.builder")){
+                } else if (msg.startsWith("!") && pls.hasPermission("chat.builder")){
                     pls.sendMessage(staffChat(msg, e.getPlayer()));
                 }
             }
