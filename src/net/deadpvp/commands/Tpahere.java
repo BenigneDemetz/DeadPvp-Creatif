@@ -9,9 +9,11 @@ import org.bukkit.entity.Player;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Tpa implements CommandExecutor {
+public class Tpahere implements CommandExecutor {
 
     public static Map<Player, Player> tpa = new HashMap<Player, Player>();
+    public static Map<Player, Player> tpahere = new HashMap<Player, Player>();
+
     Map<Player, Long> cooldowns = new HashMap<>();
 
     @Override
@@ -38,13 +40,12 @@ public class Tpa implements CommandExecutor {
             p.sendMessage("§cErreur: impossible de te téléporter à toi même !");
             return true;
         }
-        if(Tpahere.tpahere.containsKey(p)){
-            Tpahere.tpahere.remove(p);
+        if(tpa.containsKey(p)){
+            tpa.remove(p);
         }
-        tpa.put(target, p);
-
-        p.sendMessage("§5§lTéléportation>>> §6Demande §6de §6téléportation §6à §b" + target.getName() + " §6envoyé§6!");
-        target.sendMessage("§5§lTéléportation>>> §b" + p.getName() + " §6veut §6se §6téléporter §6à §6vous ! \n§5§lTéléportation>>> §6Faites §6/tpyes §6pour §6accepter §6et §6/tpno §6pour §6refuser §6!");
+        tpahere.put(p,target);
+        p.sendMessage("§5§lTéléportation>>> §6Demande §6envoyé §6à §b" + target.getName());
+        target.sendMessage("§5§lTéléportation>>> §b" + p.getName() + " §6veut §6vous §6téléporter §6à §6lui ! \n§5§lTéléportation>>> §6Faites §6/tpyes §6pour §6accepter §6et §6/tpno §6pour §6refuser §6!");
         return true;
     }
 }

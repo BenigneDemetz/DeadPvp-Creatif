@@ -1,18 +1,26 @@
 package net.deadpvp.scoreboard;
 
 import net.deadpvp.Main;
+import net.deadpvp.commands.Vanich;
+import net.deadpvp.events.EventListener;
+import net.deadpvp.events.PlayerListeners;
 import net.deadpvp.utils.ChatUtils;
 import net.deadpvp.utils.sqlUtilities;
+import net.minecraft.server.v1_16_R1.MinecraftServer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.*;
 
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
-public class ScoreboardManager{
+public class ScoreboardManager implements Runnable{
+    public static int TICK_COUNT= 0;
+    public static long[] TICKS= new long[600];
+    public static long LAST_TICK= 0L;
 
     /*
     * TODO: opti classe
@@ -37,12 +45,15 @@ public class ScoreboardManager{
         Score score14 = obj.getScore("§b§lVOTRE PROFIL");
         Score score11 = obj.getScore("§f§2 ");
         Score score10 = obj.getScore("§c§lSERVEUR");
-        Score score6 = obj.getScore("§f§l§c");
+        Score score8 = obj.getScore("§c§l§c§r");
+
         if(player.hasPermission("chat.dev")){
             Score score7 = obj.getScore("§4§lADMIN");
+            score7.setScore(7);
+            Score score3 = obj.getScore("§7§l§c");
+            score3.setScore(3);
         }
 
-        Score score3 = obj.getScore("§7§l§c");
         //Score score3 = obj.getScore("§dEn cas de bug faites");
         //Score score2 = obj.getScore("§d/bug <votre bug> !");
         Score score1 = obj.getScore("§c§b§l---------------§r");
@@ -52,9 +63,10 @@ public class ScoreboardManager{
         score1.setScore(1);
         //score2.setScore(2);
         //score3.setScore(3);
-        score6.setScore(6);
+        score8.setScore(8);
 
-        score3.setScore(3);
+
+
         score11.setScore(11);
         score15.setScore(15);
 
@@ -88,14 +100,30 @@ public class ScoreboardManager{
         Team grade= board.registerNewTeam("grade");
         grade.addEntry(ChatColor.GOLD + "" + ChatColor.LIGHT_PURPLE);
         grade.setPrefix(ChatColor.WHITE+"≫ Grade: ");
-        grade.setSuffix(ChatUtils.getPrefix(player)+"");
+        String prefix = ChatUtils.getPrefix(player).replace("[","");
+
+        grade.setSuffix(prefix.replaceAll("]","")+"");
         obj.getScore(ChatColor.GOLD + "" + ChatColor.LIGHT_PURPLE).setScore(13);
 
         Team onlineCounter = board.registerNewTeam("onlineCounter");
         onlineCounter.addEntry(ChatColor.LIGHT_PURPLE + "" + ChatColor.MAGIC);
         onlineCounter.setPrefix(ChatColor.WHITE+"≫ Créatif: ");
-        onlineCounter.setSuffix("§6"+Bukkit.getOnlinePlayers().size()+"/§c"+ Main.getInstance().playerCount);
+        int nbrjoueur = Bukkit.getOnlinePlayers().size()- Vanich.inVanish.size();
+        String phrase = "";
+        if(nbrjoueur >1){
+            phrase = "§6"+nbrjoueur+" joueurs";
+        }else{
+            phrase = "§6"+nbrjoueur+" joueur";
+        }
+        onlineCounter.setSuffix(phrase);
         obj.getScore(ChatColor.LIGHT_PURPLE + "" + ChatColor.MAGIC).setScore(9);
+
+        if(player.hasPermission("chat.dev")){
+            Team tps= board.registerNewTeam("tps");
+            tps.addEntry(ChatColor.BLACK + "" + ChatColor.LIGHT_PURPLE);
+            tps.setPrefix(ChatColor.WHITE+"≫ TPS: "+getTPS(100));
+            obj.getScore(ChatColor.BLACK + "" + ChatColor.LIGHT_PURPLE).setScore(6);
+        }
 
 
 
@@ -106,7 +134,8 @@ public class ScoreboardManager{
         Scoreboard board = player.getScoreboard();
         try {
             Object karmaint = sqlUtilities.getData("moneyserv","player",player.getName(),"karma","Int");
-            board.getTeam("Karma").setSuffix("§d"+karmaint.toString());
+            String karma = "§d"+karmaint.toString();
+            board.getTeam("Karma").setSuffix(karma);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -119,6 +148,61 @@ public class ScoreboardManager{
             throwables.printStackTrace();
         }
         board.getTeam("grade").setSuffix(ChatUtils.getPrefix(player)+"");
-        board.getTeam("onlineCounter").setSuffix("§6"+Bukkit.getOnlinePlayers().size()+"/§c"+Main.getInstance().playerCount);
+        int nbrjoueur = Bukkit.getOnlinePlayers().size()- Vanich.inVanish.size();
+        String phrase = "";
+        if(nbrjoueur >1){
+            phrase = "§6"+nbrjoueur+" joueurs";
+        }else{
+            phrase = "§6"+nbrjoueur+" joueur";
+        }
+        board.getTeam("onlineCounter").setSuffix(phrase);
+        if(player.hasPermission("chat.dev")){
+            board.getTeam("tps").setPrefix(ChatColor.WHITE+"≫ TPS: "+getTPS(100));
+        }
     }
+
+
+    public static String getTPS(int ticks)
+    {
+        return "§cà venir...";
+        //if (TICK_COUNT< ticks) {
+                //return "§a20.00";
+            // }
+        //int target = (TICK_COUNT- 1 - ticks) % TICKS.length;
+        //long elapsed = System.currentTimeMillis() - TICKS[target];
+        //double x = ticks / (elapsed / 1000.0D);
+        //DecimalFormat df = new DecimalFormat("##.##");
+        //String ret = df.format(x);
+        //if (x >=20){
+//            return "§a20.00";
+//        }else if(x >= 18){
+        //return "§2"+ret;
+        //}else if(x >= 15){
+        //    return "§6"+ret;
+        //}else if(x >= 10){
+        //    return "§c"+ret;
+        //}else {
+        //    return "§4"+ret;
+        //}
+    }
+
+    @Override
+    public void run() {
+        //TICKS[(TICK_COUNT% TICKS.length)] = System.currentTimeMillis();
+
+        //TICK_COUNT+= 1;
+        if(Bukkit.getOnlinePlayers().size() == 0){
+            return;
+        }else{
+            for(Player p : Bukkit.getOnlinePlayers()){
+                if(p.getScoreboard() == null){
+                    setScoreBoard(p);
+                }
+                updateScoreBoard(p);
+            }
+        }
+
+    }
+
+
 }

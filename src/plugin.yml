@@ -28,3 +28,4 @@ commands:
   freeze:
   getname:
     usage: "§Utilisation: /getname <pseudo>"
+  tpahere:

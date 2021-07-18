@@ -12,6 +12,17 @@ public class Tpyes implements CommandExecutor {
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args) {
         if(commandSender instanceof Player){
             Player p = (Player) commandSender;
+            if(Tpahere.tpahere.containsKey(p)){
+                Player tphere = Tpahere.tpahere.get(p);
+                p.sendMessage("§5§lTéléportation>>> §2Téléportation en cours !");
+                tphere.sendMessage("§5§lTéléportation>>> §2Téléportation acceptée !");
+                tphere.teleport(p);
+                tphere.playSound(tphere.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT,10,2);
+                p.playSound(p.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT,10,2);
+                p.getWorld().spawnParticle(Particle.PORTAL,p.getLocation(),10,40,p.getLocation().getX(),p.getLocation().getY()+1,p.getLocation().getZ());
+                Tpahere.tpahere.remove(p);
+                return true;
+            }
             if(Tpa.tpa.containsKey(p)){
                 Player tphere = Tpa.tpa.get(p);
                 tphere.sendMessage("§5§lTéléportation>>> §2Téléportation en cours !");
