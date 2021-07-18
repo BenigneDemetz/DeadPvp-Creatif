@@ -16,7 +16,7 @@ public class Tpyes implements CommandExecutor {
                 Player tphere = Tpahere.tpahere.get(p);
                 p.sendMessage("§5§lTéléportation>>> §2Téléportation en cours !");
                 tphere.sendMessage("§5§lTéléportation>>> §2Téléportation acceptée !");
-                tphere.teleport(p);
+                p.teleport(tphere);
                 tphere.playSound(tphere.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT,10,2);
                 p.playSound(p.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT,10,2);
                 p.getWorld().spawnParticle(Particle.PORTAL,p.getLocation(),10,40,p.getLocation().getX(),p.getLocation().getY()+1,p.getLocation().getZ());

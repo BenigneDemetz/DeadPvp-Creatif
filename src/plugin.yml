@@ -36,3 +36,4 @@ commands:
     permission: "chat.builder"
   ecsee:
     permission: "chat.builder"
+  night:

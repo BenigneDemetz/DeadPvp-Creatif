@@ -18,6 +18,10 @@ public class Nick implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
+        if(commandSender instanceof Player){
+            commandSender.sendMessage("§cErreur: commande temporairement désactivé !");
+            return true;
+        }
         if (!(commandSender.hasPermission("deadpvp.constructeur"))) return true;
 
         if (!(commandSender instanceof Player)) return false;

@@ -59,13 +59,7 @@ public class InventoryListeners implements Listener {
             GuiManager gui = (GuiManager) holder;
             gui.EventHandler(e);
         }
-        if(e.getCurrentItem().hasItemMeta() && e.getCurrentItem().getType() != Material.WRITTEN_BOOK){
-            e.getWhoClicked().getInventory().remove(e.getCurrentItem());
-            e.getWhoClicked().closeInventory();
-            e.setCancelled(true);
-            e.getWhoClicked().sendMessage("§c§lErreur: item temporairement désactivé !");
-            return;
-        }
+
 
     }
 

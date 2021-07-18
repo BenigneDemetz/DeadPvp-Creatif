@@ -1,9 +1,6 @@
 package net.deadpvp.scoreboard;
 
-import net.deadpvp.Main;
 import net.deadpvp.commands.Vanich;
-import net.deadpvp.events.EventListener;
-import net.deadpvp.events.PlayerListeners;
 import net.deadpvp.utils.ChatUtils;
 import net.deadpvp.utils.sqlUtilities;
 import net.minecraft.server.v1_16_R1.MinecraftServer;
@@ -14,7 +11,6 @@ import org.bukkit.scoreboard.*;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
-import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -133,6 +129,10 @@ public class ScoreboardManager implements Runnable{
     }
     public static void updateScoreBoard(Player player){
         Scoreboard board = player.getScoreboard();
+        if(player.hasPermission("chat.dev")){
+            String tps =getTPS(100);
+            board.getTeam("tps").setPrefix(ChatColor.WHITE+"≫ TPS: "+tps);
+        }
         try {
             Object karmaint = sqlUtilities.getData("moneyserv","player",player.getName(),"karma","Int");
             String karma = "§d"+karmaint.toString();
@@ -157,9 +157,7 @@ public class ScoreboardManager implements Runnable{
             phrase = "§6"+nbrjoueur+" joueur";
         }
         board.getTeam("onlineCounter").setSuffix(phrase);
-        if(player.hasPermission("chat.dev")){
-            board.getTeam("tps").setPrefix(ChatColor.WHITE+"≫ TPS: "+getTPS(100));
-        }
+
     }
 
 
@@ -170,35 +168,26 @@ public class ScoreboardManager implements Runnable{
         double ftps = (double) Math.min(Math.round(raw * 100.0) / 100.0, 20.0);
         BigDecimal bigtps = BigDecimal.valueOf(ftps);
         bigtps = bigtps.setScale(2);
-        return String.valueOf(bigtps);
+        int fin = bigtps.intValue();
+        if(fin==20){
+            return "§a20.00";
+        }else if(fin >= 18){
+            return "§2"+fin;
+        }else if(fin >=15){
+            return "§6"+fin;
+        }else if(fin >=10){
+            return "§c"+fin;
+        }else{
+            return "§4⚠ "+fin;
+        }
 
-//        return "§cà venir...";
-        //if (TICK_COUNT< ticks) {
-                //return "§a20.00";
-            // }
-        //int target = (TICK_COUNT- 1 - ticks) % TICKS.length;
-        //long elapsed = System.currentTimeMillis() - TICKS[target];
-        //double x = ticks / (elapsed / 1000.0D);
-        //DecimalFormat df = new DecimalFormat("##.##");
-        //String ret = df.format(x);
-        //if (x >=20){
-//            return "§a20.00";
-//        }else if(x >= 18){
-        //return "§2"+ret;
-        //}else if(x >= 15){
-        //    return "§6"+ret;
-        //}else if(x >= 10){
-        //    return "§c"+ret;
-        //}else {
-        //    return "§4"+ret;
-        //}
+
+//
     }
 
     @Override
     public void run() {
-        //TICKS[(TICK_COUNT% TICKS.length)] = System.currentTimeMillis();
 
-        //TICK_COUNT+= 1;
         if(Bukkit.getOnlinePlayers().size() == 0){
             return;
         }else{
