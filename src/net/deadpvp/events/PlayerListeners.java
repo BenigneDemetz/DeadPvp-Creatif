@@ -176,7 +176,6 @@ public class PlayerListeners implements Listener {
             NBTTagCompound nbt = item.getTag();
             if ((nbt.toString()).contains("run_command")) {
                 System.out.println("§c" + p.getName() + " A TENTE DE METTRE UNE COMMANDE SUR UN ITEM : " + nbt.toString());
-                block.setType(Material.AIR);
                 p.getInventory().clear();
                 p.getInventory().setItem(8, book());
                 punishRoom(p);

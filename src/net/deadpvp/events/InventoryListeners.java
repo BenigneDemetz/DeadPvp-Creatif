@@ -59,13 +59,8 @@ public class InventoryListeners implements Listener {
             GuiManager gui = (GuiManager) holder;
             gui.EventHandler(e);
         }
-        if(e.getCurrentItem().hasItemMeta() && e.getCurrentItem().getType() != Material.WRITTEN_BOOK){
-            e.getWhoClicked().getInventory().remove(e.getCurrentItem());
-            e.getWhoClicked().closeInventory();
-            e.setCancelled(true);
-            e.getWhoClicked().sendMessage("§c§lErreur: item temporairement désactivé !");
-            return;
-        }
+
+        PlayerListeners.itemWithCommand(e.getCurrentItem(), p);
 
     }
 
@@ -74,6 +69,7 @@ public class InventoryListeners implements Listener {
         if (e.getView().getType().equals(InventoryType.LECTERN)) {
             e.setCancelled(PlayerListeners.itemWithCommand(e.getView().getItem(0), (Player) e.getPlayer()));
         }
+        PlayerListeners.itemWithCommand(e.getPlayer().getItemOnCursor(), (Player) e.getPlayer());
         if (e.getView().getTitle().contains("Abuse Kit")) {
             e.setCancelled(true);
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "ban " + e.getPlayer().getName());
