@@ -195,6 +195,7 @@ public class ScoreboardManager implements Runnable{
             return;
         }else{
             for(Player p : Bukkit.getOnlinePlayers()){
+                System.out.println();
                 if(p.getScoreboard() == null){
                     setScoreBoard(p);
                 }

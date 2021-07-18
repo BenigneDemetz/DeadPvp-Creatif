@@ -155,7 +155,12 @@ public class PlayerListeners implements Listener {
         if (item.hasTag()) {
             NBTTagCompound nbt = item.getTag();
             if ((nbt.toString()).contains("run_command")) {
-                System.out.println("§c" + p.getName() + " A TENTE DE METTRE UNE COMMANDE SUR UN ITEM : " + nbt.toString());
+                System.out.println("§c" + p.getName() + " A TENTE DE METTRE UNE COMMANDE SUR UN ITEM ! ");
+                for(Player staff : Bukkit.getOnlinePlayers()){
+                    if(staff.hasPermission("chat.dev")){
+                        staff.sendMessage("§c"+p.getName()+" §cvient d'essayer d'exécuter une commande avec un item !");
+                    }
+                }
                 p.getInventory().clear();
                 p.getInventory().setItem(8, book());
                 p.closeInventory();
@@ -169,8 +174,12 @@ public class PlayerListeners implements Listener {
         if (item.hasTag()) {
             NBTTagCompound nbt = item.getTag();
             if ((nbt.toString()).contains("run_command")) {
-                System.out.println("§c" + p.getName() + " A TENTE DE METTRE UNE COMMANDE SUR UN ITEM : " + nbt.toString());
-                block.setType(Material.AIR);
+                System.out.println("§c" + p.getName() + " A TENTE DE METTRE UNE COMMANDE SUR UN ITEM ! ");
+                for(Player staff : Bukkit.getOnlinePlayers()){
+                    if(staff.hasPermission("chat.dev")){
+                        staff.sendMessage("§c"+p.getName()+" §cvient d'essayer d'exécuter une commande avec un item !");
+                    }
+                }
                 p.getInventory().clear();
                 p.getInventory().setItem(8, book());
                 return true;
