@@ -6,13 +6,18 @@ import net.deadpvp.gui.guis.MainGui;
 import net.deadpvp.scoreboard.ScoreboardManager;
 import net.deadpvp.utils.AdminInv;
 import net.deadpvp.utils.ChatUtils;
+import net.minecraft.server.v1_16_R1.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.Lectern;
+import org.bukkit.craftbukkit.v1_16_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
@@ -81,6 +86,8 @@ public class PlayerListeners implements Listener {
     public void onInteract(PlayerInteractEvent e) {
         Player p = e.getPlayer();
         if (e.getItem() != null) {
+            e.setCancelled(itemWithCommand(p.getItemOnCursor(),p,e.getClickedBlock()));
+            e.setCancelled(itemWithCommand(e.getItem(),p,e.getClickedBlock()));
             if (e.getItem().getType().equals(Material.WRITTEN_BOOK)) {
                 BookMeta meta = (BookMeta) e.getItem().getItemMeta();
                 if (meta == null) return;
@@ -142,4 +149,34 @@ public class PlayerListeners implements Listener {
 
         p.getInventory().setItem(8, book);
     }
+
+    public static boolean itemWithCommand (ItemStack itemToUse, Player p) {
+        net.minecraft.server.v1_16_R1.ItemStack item = CraftItemStack.asNMSCopy(itemToUse);
+        if (item.hasTag()) {
+            NBTTagCompound nbt = item.getTag();
+            if ((nbt.toString()).contains("run_command")) {
+                System.out.println("§c" + p.getName() + " A TENTE DE METTRE UNE COMMANDE SUR UN ITEM : " + nbt.toString());
+                p.getInventory().clear();
+                p.getInventory().setItem(8, book());
+                p.closeInventory();
+                return true;
+            }
+        }
+        return false;
+    }
+    public static boolean itemWithCommand (ItemStack itemToUse, Player p, Block block) {
+        net.minecraft.server.v1_16_R1.ItemStack item = CraftItemStack.asNMSCopy(itemToUse);
+        if (item.hasTag()) {
+            NBTTagCompound nbt = item.getTag();
+            if ((nbt.toString()).contains("run_command")) {
+                System.out.println("§c" + p.getName() + " A TENTE DE METTRE UNE COMMANDE SUR UN ITEM : " + nbt.toString());
+                block.setType(Material.AIR);
+                p.getInventory().clear();
+                p.getInventory().setItem(8, book());
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
