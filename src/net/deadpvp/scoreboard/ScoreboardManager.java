@@ -12,6 +12,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.*;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.Date;
@@ -164,7 +165,14 @@ public class ScoreboardManager implements Runnable{
 
     public static String getTPS(int ticks)
     {
-        return "§cà venir...";
+        double[] tps = MinecraftServer.getServer().recentTps;
+        double raw = tps[0];
+        double ftps = (double) Math.min(Math.round(raw * 100.0) / 100.0, 20.0);
+        BigDecimal bigtps = BigDecimal.valueOf(ftps);
+        bigtps = bigtps.setScale(2);
+        return String.valueOf(bigtps);
+
+//        return "§cà venir...";
         //if (TICK_COUNT< ticks) {
                 //return "§a20.00";
             // }

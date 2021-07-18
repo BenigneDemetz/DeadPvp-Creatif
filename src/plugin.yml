@@ -13,6 +13,7 @@ commands:
     aliases: lobby
   speed:
     usage: "§cUtilisation: /speed [0-10]"
+    permission: "deadpvp.apprenti"
   spawn:
   livrebeta:
   vanish:
@@ -25,7 +26,13 @@ commands:
     aliases: tprefuse
   nick:
     usage: "§cUtilisation: /nick <pseudo>"
+    permission: "deadpvp.constructeur"
   freeze:
+    permission: "chat.builder"
   getname:
     usage: "§Utilisation: /getname <pseudo>"
   tpahere:
+  invsee:
+    permission: "chat.builder"
+  ecsee:
+    permission: "chat.builder"

@@ -21,11 +21,16 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class PlayerListeners implements Listener {
+
+    static ArrayList<Player> punishedPlayers= new ArrayList<>();
 
     public static ItemStack book(){
         ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
@@ -159,6 +164,7 @@ public class PlayerListeners implements Listener {
                 p.getInventory().clear();
                 p.getInventory().setItem(8, book());
                 p.closeInventory();
+                punishRoom(p);
                 return true;
             }
         }
@@ -173,10 +179,23 @@ public class PlayerListeners implements Listener {
                 block.setType(Material.AIR);
                 p.getInventory().clear();
                 p.getInventory().setItem(8, book());
+                punishRoom(p);
                 return true;
             }
         }
         return false;
+    }
+
+    public static void punishRoom (Player p) {
+//        p.teleport(new Location(Bukkit.getWorld("Creatif"),0.5,20.1,0.5,0,0));
+//        punishedPlayers.add(p);
+//        p.setGameMode(GameMode.SURVIVAL);
+//        new BukkitRunnable() {
+//            @Override
+//            public void run() {
+//                p.damage(5);
+//            }
+//        }.runTaskTimer(Main.getInstance(),0,5);
     }
 
 }
