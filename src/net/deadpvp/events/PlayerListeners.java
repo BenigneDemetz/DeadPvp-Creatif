@@ -124,23 +124,9 @@ public class PlayerListeners implements Listener {
 
     @EventHandler
     public void onLeave(PlayerQuitEvent e) {
-        e.setQuitMessage("§d[§4-§d] " + ChatUtils.getPrefix(e.getPlayer()) + e.getPlayer().getName());
-        ;
-        Player player = e.getPlayer();
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            p.showPlayer(player);
-        }
-        if (Vanich.inVanish.contains(e.getPlayer())) {
-            AdminInv ai = AdminInv.getFromPlayer(player);
-            ai.destroy();
-            Main.getInstance().staffModePlayers.remove(player);
-            ai.giveInv(player);
-            player.sendMessage("§bVous n'êtes plus en vanish !");
-            player.setAllowFlight(false);
-            player.setFlying(false);
-            player.setPlayerListName(ChatUtils.getPrefix(player) + player.getName());
-            Vanich.inVanish.remove(player);
-        }
+        if (!Vanich.inVanish.contains(e.getPlayer()))
+            e.setQuitMessage("§d[§4-§d] " + ChatUtils.getPrefix(e.getPlayer()) + e.getPlayer().getName());
+        else e.setQuitMessage("");
     }
 
     @EventHandler

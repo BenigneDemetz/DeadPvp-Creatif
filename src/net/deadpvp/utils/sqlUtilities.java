@@ -68,19 +68,25 @@ public class sqlUtilities {
     }
 
     public static Object getData(String table, String nameColumn, String playerSearched, String columnSearched,
-                            String dataTypeSearchedStringOrInt) throws SQLException {
+                                 String dataTypeSearchedStringOrIntOrBoolean) throws SQLException {
         Connection connection = Main.getInstance().getConnection();
         PreparedStatement preparedStatement =
                 connection.prepareStatement("SELECT * FROM " + table + " WHERE " + nameColumn + "='" + playerSearched + "';");
         ResultSet resultSet =  preparedStatement.executeQuery();
         if (resultSet.next()) {
-            if (dataTypeSearchedStringOrInt.equalsIgnoreCase("String")) {
+            if (dataTypeSearchedStringOrIntOrBoolean.equalsIgnoreCase("String")) {
                 String data = resultSet.getString(columnSearched);
                 preparedStatement.close();
                 resultSet.close();
                 return data;
-            } else if (dataTypeSearchedStringOrInt.equalsIgnoreCase("Int")) {
+            } else if (dataTypeSearchedStringOrIntOrBoolean.equalsIgnoreCase("Int")) {
                 int data = resultSet.getInt(columnSearched);
+                resultSet.close();
+                preparedStatement.close();
+                return data;
+            }
+            else if (dataTypeSearchedStringOrIntOrBoolean.equalsIgnoreCase("Boolean")) {
+                boolean data = resultSet.getBoolean(columnSearched);
                 resultSet.close();
                 preparedStatement.close();
                 return data;
@@ -99,10 +105,20 @@ public class sqlUtilities {
         insert.close();
     }
 
-    public static void updateData (String table, String nameColumn, Object data, String player) throws SQLException {
+    public static void insertData(String table, String playerName, boolean bool,
+                                  String columnsToInsert) throws SQLException {
+        Connection connection = Main.getInstance().getConnection();
+        PreparedStatement insert =
+                connection.prepareStatement(
+                        "INSERT INTO "+ table + " (" + columnsToInsert + ") VALUES ('" +playerName  + "', " + bool + ")");
+        insert.execute();
+        insert.close();
+    }
+
+    public static void updateData (String table, String nameColumn, Object data, String dataToMatch, String player) throws SQLException {
         Connection connection = Main.getInstance().getConnection();
         PreparedStatement modifyStats =
-                connection.prepareStatement("UPDATE "+ table + " SET " + nameColumn +"=" + data + " WHERE player='" + player + "';");
+                connection.prepareStatement("UPDATE "+ table + " SET " + nameColumn +"=" + data + " WHERE " + dataToMatch + "='" + player + "';");
         modifyStats.execute();
         modifyStats.close();
     }
