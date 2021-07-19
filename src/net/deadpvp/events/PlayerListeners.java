@@ -6,6 +6,7 @@ import net.deadpvp.gui.guis.MainGui;
 import net.deadpvp.scoreboard.ScoreboardManager;
 import net.deadpvp.utils.AdminInv;
 import net.deadpvp.utils.ChatUtils;
+import net.deadpvp.utils.sqlUtilities;
 import net.minecraft.server.v1_16_R1.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -25,6 +26,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -123,23 +125,14 @@ public class PlayerListeners implements Listener {
     }
 
     @EventHandler
-    public void onLeave(PlayerQuitEvent e) {
-        e.setQuitMessage("§d[§4-§d] " + ChatUtils.getPrefix(e.getPlayer()) + e.getPlayer().getName());
-        ;
+    public void onLeave(PlayerQuitEvent e) throws SQLException {
         Player player = e.getPlayer();
+        if (sqlUtilities.getData("staffdetails", "staff",player.getName(),"vanished","Boolean").equals(true)) {
+            e.setQuitMessage("");
+        }
+        e.setQuitMessage("§d[§4-§d] " + ChatUtils.getPrefix(e.getPlayer()) + e.getPlayer().getName());
         for (Player p : Bukkit.getOnlinePlayers()) {
             p.showPlayer(player);
-        }
-        if (Vanich.inVanish.contains(e.getPlayer())) {
-            AdminInv ai = AdminInv.getFromPlayer(player);
-            ai.destroy();
-            Main.getInstance().staffModePlayers.remove(player);
-            ai.giveInv(player);
-            player.sendMessage("§bVous n'êtes plus en vanish !");
-            player.setAllowFlight(false);
-            player.setFlying(false);
-            player.setPlayerListName(ChatUtils.getPrefix(player) + player.getName());
-            Vanich.inVanish.remove(player);
         }
     }
 

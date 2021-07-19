@@ -82,7 +82,7 @@ public class ChatUtils {
             int karmatogive = new Random().nextInt(4) + 1;
             if (sqlUtilities.hasData("moneyserv", "player", p.getName())) {
                 int data = (int) sqlUtilities.getData("moneyserv","player",p.getName(), "karma","Int" );
-                sqlUtilities.updateData("moneyserv", "karma", data + karmatogive, p.getName());
+                sqlUtilities.updateData("moneyserv", "karma", data + karmatogive,"player", p.getName());
             }
             else {
                 sqlUtilities.insertData("moneyserv", p.getName(), 0, karmatogive, "player, mystiques, karma");
