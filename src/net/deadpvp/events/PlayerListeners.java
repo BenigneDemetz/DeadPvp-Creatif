@@ -16,6 +16,7 @@ import org.bukkit.craftbukkit.v1_16_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
@@ -37,6 +38,9 @@ public class PlayerListeners implements Listener {
     public Team architecte;
     public Team constructeur;
     public Team apprenti;
+
+    public Location spawn = new Location(Bukkit.getServer().getWorld("Creatif"), 0.5, 65.1, 80.5, 0, 0);
+
 
     static ArrayList<Player> punishedPlayers= new ArrayList<>();
 
@@ -66,7 +70,6 @@ public class PlayerListeners implements Listener {
             }
         }
 
-        Location spawn = new Location(Bukkit.getServer().getWorld("Creatif"), 0.5, 65.1, 80.5, 0, 0);
         p.teleport(spawn);
         p.setPlayerListName(ChatUtils.getPrefix(p) + p.getDisplayName());
 
@@ -90,6 +93,16 @@ public class PlayerListeners implements Listener {
 
     @EventHandler
     public void onMove(PlayerMoveEvent e) {
+        if(e.getPlayer().getLocation().getY() <= 0){
+            Player p = e.getPlayer();
+            if(p.getBedSpawnLocation() == null){
+                p.teleport(spawn);
+                p.sendMessage("§7Vous venez d'être téléporté au spawn !");
+            }else{
+                p.sendMessage("§7Vous venez d'être téléporté à votre point de réapparition !");
+                p.teleport(p.getBedSpawnLocation());
+            }
+        }
         if (Main.freeze.contains(e.getPlayer())) {
             e.setCancelled(true);
             e.getPlayer().sendTitle("§c§lVous êtes freeze !", "§6§lMerci de venir sur discord: discord.gg/23kPxkbzDg", 1000, 0, 0);
@@ -153,7 +166,34 @@ public class PlayerListeners implements Listener {
             Vanich.inVanish.remove(player);
         }
     }
+    @EventHandler
+    public void onDamage(EntityDamageEvent e){
+        if(e.getEntity() instanceof Player){
+            Player p = (Player) e.getEntity();
+            if(p.getHealth() <= e.getDamage() && !e.isCancelled()){
+                e.setCancelled(true);
+                p.sendTitle("§f","§cVous êtes mort !",20,20*3,1);
+                p.setHealth(p.getMaxHealth());
+                p.setFoodLevel(20);
+                p.setFallDistance(0);
+                if(p.getBedSpawnLocation() == null){
+                    p.teleport(spawn);
+                }else{
+                    p.teleport(p.getBedSpawnLocation());
+                }
+                p.setFallDistance(0);
 
+                ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
+                BookMeta meta = (BookMeta) book.getItemMeta();
+                meta.setAuthor("§4§lDEAD§9§lPVP");
+                meta.setTitle("§dCarnet de commandes");
+                book.setItemMeta(meta);
+
+                p.getInventory().setItem(8, book);
+            }
+        }
+
+    }
     @EventHandler
     public void onRespawn (PlayerRespawnEvent e) {
         Player p = e.getPlayer();

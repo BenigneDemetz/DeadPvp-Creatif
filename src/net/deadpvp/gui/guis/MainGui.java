@@ -78,6 +78,7 @@ public class MainGui extends GuiManager {
         ItemBuilder survie = new ItemBuilder(Material.IRON_SWORD).setName("§d§lMode Survie").hideAttributes();
         ItemBuilder aventure = new ItemBuilder(Material.MAP).setName("§d§lMode Aventure").hideAttributes();
         ItemBuilder openVault = new ItemBuilder(Material.ENDER_CHEST).setName("§d§lOuvrir Mystery Boxes");
+        ItemBuilder plotoptions = new ItemBuilder(Material.COMPARATOR).setName("§d§lOptions du plot");
 
 
         GameMode gameMode = playerGuiUtils.getPlayer().getGameMode();
@@ -90,9 +91,10 @@ public class MainGui extends GuiManager {
             aventure.addEnchant(Enchantment.DAMAGE_ALL, 1);
         }
 
-        inv.setItem(1*9+2, itemPlot.toItemStack()); // 11
+        inv.setItem(1*9+2,plotoptions.toItemStack()); //11
+        inv.setItem(1*9+4, itemPlot.toItemStack()); // 13
         inv.setItem(1*9+6, cosmetique.toItemStack()); //15
-        inv.setItem(1*9+7, openVault.toItemStack()); //16
+        inv.setItem(3*9+4, openVault.toItemStack()); //16
         inv.setItem(3*9+0, hub.toItemStack()); // 27
         inv.setItem(3*9+1, spawn.toItemStack()); // 28
         inv.setItem(3*9+6, aventure.toItemStack()); // 33

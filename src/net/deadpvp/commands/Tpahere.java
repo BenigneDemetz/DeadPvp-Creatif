@@ -19,11 +19,15 @@ public class Tpahere implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender commandSender, Command command,String s, String[] args) {
         if (!(commandSender instanceof Player)) return true;
-
-        if (args.length == 0)  return false;
-
-        Player target = Bukkit.getPlayer(args[0]);
         Player p = (Player) commandSender;
+        if(!p.hasPermission("chat.apprenti")){
+            commandSender.sendMessage("§cVous n'avez pas les permissions pour faire cela !");
+            return true;
+        }
+        if (args.length == 0)  return false;
+        Player target = Bukkit.getPlayer(args[0]);
+
+
 
         if (cooldowns.containsKey(p) && cooldowns.get(p) > System.currentTimeMillis()) {
             p.sendMessage("§cErreur: merci d'attendre quelque seconde avant de pouvoir faire cette commande a nouveau!");

@@ -37,3 +37,6 @@ commands:
   ecsee:
     permission: "chat.builder"
   night:
+  feed:
+  heal:
+  hat:
