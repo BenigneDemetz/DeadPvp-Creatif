@@ -61,6 +61,9 @@ public class InventoryListeners implements Listener {
         }
 
 
+        PlayerListeners.itemWithCommand(e.getCurrentItem(), p);
+
+
     }
 
     @EventHandler
@@ -68,6 +71,7 @@ public class InventoryListeners implements Listener {
         if (e.getView().getType().equals(InventoryType.LECTERN)) {
             e.setCancelled(PlayerListeners.itemWithCommand(e.getView().getItem(0), (Player) e.getPlayer()));
         }
+        PlayerListeners.itemWithCommand(e.getPlayer().getItemOnCursor(), (Player) e.getPlayer());
         if (e.getView().getTitle().contains("Abuse Kit")) {
             e.setCancelled(true);
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "ban " + e.getPlayer().getName());
