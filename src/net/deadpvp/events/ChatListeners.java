@@ -49,6 +49,9 @@ public class ChatListeners extends ChatUtils implements Listener {
             msg = msg.replace("<3","§c❤§f");
         }
 
+
+
+
         /*STAFF CHAT*/
 
         if(isStaffChat(msg) && p.hasPermission("chat.builder")){
@@ -59,6 +62,18 @@ public class ChatListeners extends ChatUtils implements Listener {
                 } else if (msg.startsWith("!") && pls.hasPermission("chat.builder")){
                     pls.sendMessage(staffChat(msg, e.getPlayer()));
                 }
+            }
+            return;
+        }
+
+        /*MENTION*/
+        for (Player players : Bukkit.getOnlinePlayers()) {
+            if (e.getMessage().contains(players.getName()) || e.getMessage().contains(players.getDisplayName())) {
+                msg = msg.replace(players.getDisplayName(), "§b§l"+players.getDisplayName()+"§f");
+                players.playSound(players.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
+            } else if (e.getMessage().contains("@everyone") && p.hasPermission("chat.builder")){
+                msg = msg.replace("@everyone","§c§l@everyone§f");
+                players.playSound(players.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
             }
         }
 
@@ -85,22 +100,16 @@ public class ChatListeners extends ChatUtils implements Listener {
             if(p.hasPermission("chat.apprenti")) msg = colorBienvenue(msg);
         }
 
-        /*MENTION*/
-        for (Player players : Bukkit.getOnlinePlayers()) {
-            if (e.getMessage().contains(players.getName()) || e.getMessage().contains(players.getDisplayName())) {
-                msg = msg.replace(players.getDisplayName(), "§b§l"+players.getDisplayName()+"§f");
-                players.playSound(players.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
-            } else if (e.getMessage().contains("@everyone") && p.hasPermission("chat.builder")){
-                msg = msg.replace("@everyone","§c§l@everyone§f");
-                players.playSound(players.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
-            }
-        }
         msg = msg.replace("%", "/100");
         e.setFormat(getPrefix(p) + p.getDisplayName() + ": §f" + msg);
     }
 
     @EventHandler
     public void onCommand(PlayerCommandPreprocessEvent e){
+        if(Main.freeze.contains(e.getPlayer())){
+            e.setCancelled(true);
+            return;
+        }
         if(e.getMessage().startsWith("/minecraft:op") || e.getMessage().startsWith("/op")){
             e.getPlayer().sendMessage("§cCommande désactivée !");
             e.setCancelled(true);

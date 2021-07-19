@@ -12,23 +12,35 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.Lectern;
 import org.bukkit.craftbukkit.v1_16_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scoreboard.Score;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class PlayerListeners implements Listener {
+
+    public Team admin;
+    public Team dev;
+    public Team modo;
+    public Team builder;
+    public Team joueur;
+    public Team architecte;
+    public Team constructeur;
+    public Team apprenti;
+
+    public Location spawn = new Location(Bukkit.getServer().getWorld("Creatif"), 0.5, 65.1, 80.5, 0, 0);
+
 
     static ArrayList<Player> punishedPlayers= new ArrayList<>();
 
@@ -49,6 +61,7 @@ public class PlayerListeners implements Listener {
     public void onJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
         ScoreboardManager.setScoreBoard(p);
+        settab(p);
         p.getInventory().setItem(8, book());
 
         if (!p.hasPermission("deadpvp.vanich")) {
@@ -57,7 +70,6 @@ public class PlayerListeners implements Listener {
             }
         }
 
-        Location spawn = new Location(Bukkit.getServer().getWorld("Creatif"), 0.5, 65.1, 80.5, 0, 0);
         p.teleport(spawn);
         p.setPlayerListName(ChatUtils.getPrefix(p) + p.getDisplayName());
 
@@ -81,9 +93,19 @@ public class PlayerListeners implements Listener {
 
     @EventHandler
     public void onMove(PlayerMoveEvent e) {
+        if(e.getPlayer().getLocation().getY() <= 0){
+            Player p = e.getPlayer();
+            if(p.getBedSpawnLocation() == null){
+                p.teleport(spawn);
+                p.sendMessage("§7Vous venez d'être téléporté au spawn !");
+            }else{
+                p.sendMessage("§7Vous venez d'être téléporté à votre point de réapparition !");
+                p.teleport(p.getBedSpawnLocation());
+            }
+        }
         if (Main.freeze.contains(e.getPlayer())) {
             e.setCancelled(true);
-            e.getPlayer().sendTitle("§c§lVous êtes freeze !", "§6§lMerci de venir sur discord: discord.gg/23kPxkbzDg", 10, 0, 0);
+            e.getPlayer().sendTitle("§c§lVous êtes freeze !", "§6§lMerci de venir sur discord: discord.gg/23kPxkbzDg", 1000, 0, 0);
         }
     }
 
@@ -91,8 +113,10 @@ public class PlayerListeners implements Listener {
     public void onInteract(PlayerInteractEvent e) {
         Player p = e.getPlayer();
         if (e.getItem() != null) {
-            e.setCancelled(itemWithCommand(p.getItemOnCursor(),p,e.getClickedBlock()));
-            e.setCancelled(itemWithCommand(e.getItem(),p,e.getClickedBlock()));
+            if(itemWithCommand(p.getItemOnCursor(),p,e.getClickedBlock()) || itemWithCommand(e.getItem(),p,e.getClickedBlock())){
+                //On doit verifier comme ça sinon la hache de worldedit casse les blocks
+                e.setCancelled(true);
+            }
             if (e.getItem().getType().equals(Material.WRITTEN_BOOK)) {
                 BookMeta meta = (BookMeta) e.getItem().getItemMeta();
                 if (meta == null) return;
@@ -142,7 +166,34 @@ public class PlayerListeners implements Listener {
             Vanich.inVanish.remove(player);
         }
     }
+    @EventHandler
+    public void onDamage(EntityDamageEvent e){
+        if(e.getEntity() instanceof Player){
+            Player p = (Player) e.getEntity();
+            if(p.getHealth() <= e.getDamage() && !e.isCancelled()){
+                e.setCancelled(true);
+                p.sendTitle("§f","§cVous êtes mort !",20,20*3,1);
+                p.setHealth(p.getMaxHealth());
+                p.setFoodLevel(20);
+                p.setFallDistance(0);
+                if(p.getBedSpawnLocation() == null){
+                    p.teleport(spawn);
+                }else{
+                    p.teleport(p.getBedSpawnLocation());
+                }
+                p.setFallDistance(0);
 
+                ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
+                BookMeta meta = (BookMeta) book.getItemMeta();
+                meta.setAuthor("§4§lDEAD§9§lPVP");
+                meta.setTitle("§dCarnet de commandes");
+                book.setItemMeta(meta);
+
+                p.getInventory().setItem(8, book);
+            }
+        }
+
+    }
     @EventHandler
     public void onRespawn (PlayerRespawnEvent e) {
         Player p = e.getPlayer();
@@ -197,4 +248,111 @@ public class PlayerListeners implements Listener {
 //        }.runTaskTimer(Main.getInstance(),0,5);
     }
 
+    public void settab(Player p){
+        org.bukkit.scoreboard.ScoreboardManager manager = Bukkit.getScoreboardManager();
+        for(Player update: Bukkit.getOnlinePlayers()){
+            Scoreboard board = teaminit(update);
+            for(Player pl : Bukkit.getOnlinePlayers()){
+                setteamto(pl);
+            }
+            update.setScoreboard(board);
+        }
+
+
+
+
+
+    }
+
+    public Scoreboard teaminit(Player p){
+        Scoreboard board = p.getScoreboard();
+        admin = board.getTeam("001-Admin");
+        if(admin == null){
+            admin = board.registerNewTeam("001-Admin");
+            admin.setPrefix("§4[Admin] ");
+        }
+
+        dev = board.getTeam("002-Dev");
+        if(dev == null){
+            dev = board.registerNewTeam("002-Dev");
+            dev.setPrefix("§c[Développeur] ");
+        }
+
+        modo = board.getTeam("003-modo");
+        if(modo == null){
+            modo = board.registerNewTeam("003-modo");
+            modo.setPrefix("§6[Modérateur] ");
+        }
+
+        builder = board.getTeam("004-builder");
+        if(builder == null){
+            builder = board.registerNewTeam("004-builder");
+            builder.setPrefix("§9[Builder] ");
+        }
+
+        architecte = board.getTeam("005-architecte");
+        if(architecte == null){
+            architecte = board.registerNewTeam("005-architecte");
+            architecte.setPrefix("§b[Architecte] ");
+        }
+
+        constructeur = board.getTeam("006-constructeur");
+        if(constructeur == null){
+            constructeur = board.registerNewTeam("006-constructeur");
+            constructeur.setPrefix("§3[Constructeur] ");
+        }
+
+        apprenti = board.getTeam("007-apprenti");
+        if(apprenti == null){
+            apprenti = board.registerNewTeam("007-apprenti");
+            apprenti.setPrefix("§a[Apprenti] ");
+        }
+
+
+        joueur = board.getTeam("008-joueur");
+        if(joueur == null){
+            joueur = board.registerNewTeam("008-joueur");
+            joueur.setPrefix("§7");
+        }
+        return board;
+    }
+    public void setteamto(Player pl){
+        if(pl.getPlayer().getName().equalsIgnoreCase("Red_Spash") || pl.getPlayer().getName().equalsIgnoreCase("Arnaud013")){
+            pl.setPlayerListName(dev.getPrefix()+pl.getPlayer().getName());
+            dev.addPlayer(pl);
+            dev.addEntry(pl.getName());
+        }else if(pl.hasPermission("chat.admin")){
+            pl.setPlayerListName(admin.getPrefix()+pl.getPlayer().getName());
+            admin.addPlayer(pl);
+            admin.addEntry(pl.getName());
+        }else if (pl.hasPermission("chat.dev")){
+            pl.setPlayerListName(dev.getPrefix()+pl.getPlayer().getName());
+            dev.addPlayer(pl);
+            dev.addEntry(pl.getName());
+        }else if (pl.hasPermission("chat.modo")){
+            pl.setPlayerListName(modo.getPrefix()+pl.getPlayer().getName());
+            modo.addPlayer(pl);
+            modo.addEntry(pl.getName());
+        }else if (pl.hasPermission("chat.builder")){
+            pl.setPlayerListName(builder.getPrefix()+pl.getPlayer().getName());
+            builder.addPlayer(pl);
+            builder.addEntry(pl.getName());
+        }else if (pl.hasPermission("chat.architecte")){
+            pl.setPlayerListName(architecte.getPrefix()+pl.getPlayer().getName());
+            architecte.addPlayer(pl);
+            architecte.addEntry(pl.getName());
+        }else if (pl.hasPermission("chat.constructeur")){
+            pl.setPlayerListName(constructeur.getPrefix()+pl.getPlayer().getName());
+            constructeur.addPlayer(pl);
+            constructeur.addEntry(pl.getName());
+        }else if (pl.hasPermission("chat.apprenti")){
+            pl.setPlayerListName(apprenti.getPrefix()+pl.getPlayer().getName());
+            apprenti.addPlayer(pl);
+            apprenti.addEntry(pl.getName());
+        }else{
+            pl.setPlayerListName(joueur.getPrefix()+pl.getPlayer().getName());
+            joueur.addPlayer(pl);
+            joueur.addEntry(pl.getName());
+        }
+    }
 }

@@ -48,6 +48,9 @@ public class ChatUtils {
     }
 
     public static boolean isLockedCommand(String string, List<String> blockedCommands) {
+        if(string.startsWith("/plot")){
+            return false;
+        }
         for (String str : blockedCommands){
             if(string.startsWith(str)) return true;
         }

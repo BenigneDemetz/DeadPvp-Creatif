@@ -60,7 +60,9 @@ public class InventoryListeners implements Listener {
             gui.EventHandler(e);
         }
 
+
         PlayerListeners.itemWithCommand(e.getCurrentItem(), p);
+
 
     }
 

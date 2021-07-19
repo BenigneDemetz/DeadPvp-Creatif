@@ -103,6 +103,10 @@ public class Main extends JavaPlugin implements PluginMessageListener {
         getCommand ("tpahere").setExecutor (new Tpahere());
         getCommand ("invsee").setExecutor (new Invsee());
         getCommand ("ecsee").setExecutor (new EcInvsee());
+        getCommand("night").setExecutor(new night());
+        getCommand("feed").setExecutor(new feed());
+        getCommand("heal").setExecutor(new heal());
+        getCommand("hat").setExecutor(new hat());
     }
 
     public static PlayerGuiUtils getPlayerGuiUtils(Player p){

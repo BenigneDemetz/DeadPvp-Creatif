@@ -19,11 +19,15 @@ public class Tpahere implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender commandSender, Command command,String s, String[] args) {
         if (!(commandSender instanceof Player)) return true;
-
-        if (args.length == 0)  return false;
-
-        Player target = Bukkit.getPlayer(args[0]);
         Player p = (Player) commandSender;
+        if(!p.hasPermission("chat.apprenti")){
+            commandSender.sendMessage("§cVous n'avez pas les permissions pour faire cela !");
+            return true;
+        }
+        if (args.length == 0)  return false;
+        Player target = Bukkit.getPlayer(args[0]);
+
+
 
         if (cooldowns.containsKey(p) && cooldowns.get(p) > System.currentTimeMillis()) {
             p.sendMessage("§cErreur: merci d'attendre quelque seconde avant de pouvoir faire cette commande a nouveau!");
@@ -43,7 +47,7 @@ public class Tpahere implements CommandExecutor {
         if(tpa.containsKey(p)){
             tpa.remove(p);
         }
-        tpahere.put(p,target);
+        tpahere.put(target,p);
         p.sendMessage("§5§lTéléportation>>> §6Demande §6envoyé §6à §b" + target.getName());
         target.sendMessage("§5§lTéléportation>>> §b" + p.getName() + " §6veut §6vous §6téléporter §6à §6lui ! \n§5§lTéléportation>>> §6Faites §6/tpyes §6pour §6accepter §6et §6/tpno §6pour §6refuser §6!");
         return true;

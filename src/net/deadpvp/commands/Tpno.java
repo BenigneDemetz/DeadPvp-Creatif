@@ -11,9 +11,18 @@ public class Tpno implements CommandExecutor {
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args) {
         if(commandSender instanceof Player){
             Player p = (Player) commandSender;
+            Player tphere = Tpahere.tpahere.get(p);
+            if(Tpahere.tpahere.containsKey(p)){
+                tphere.sendMessage("§5§lTéléportation>>> §cTéléportation refusée !");
+                p.sendMessage("§5§lTéléportation>>> §cTéléportation refusée !");
+                tphere.playSound(tphere.getLocation(), Sound.ENTITY_VILLAGER_NO,10,1);
+                p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO,10,2);
+                Tpahere.tpahere.remove(p);
+                return true;
 
+            }
             if(Tpa.tpa.containsKey(p)){
-                Player tphere = Tpa.tpa.get(p);
+
                 tphere.sendMessage("§5§lTéléportation>>> §cTéléportation refusée !");
                 p.sendMessage("§5§lTéléportation>>> §cTéléportation refusée !");
                 tphere.playSound(tphere.getLocation(), Sound.ENTITY_VILLAGER_NO,10,1);
